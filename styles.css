@@ -1,0 +1,64 @@
+/* Import Tailwind CSS */
+@import url('https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css');
+
+/* Custom styles */
+body {
+  background-color: #fefce8;
+  color: #1f2937;
+}
+
+header {
+  background-color: #fbcfe8;
+  padding: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+footer {
+  background-color: #fbcfe8;
+  padding: 1rem;
+  text-align: center;
+  margin-top: 2.5rem;
+}
+
+/* Form styles */
+input[type="file"],
+select,
+input[type="text"],
+textarea {
+  border: 1px solid #e5e7eb;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+}
+
+/* Button styles */
+button[type="submit"] {
+  background-color: #f472b6;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+}
+
+button[type="submit"]:hover {
+  background-color: #ec4899;
+}
+
+/* Rating styles */
+#boba-rating {
+  display: flex;
+  gap: 0.25rem;
+  font-size: 1.875rem;
+  cursor: pointer;
+}
+
+/* Review card styles */
+.review-card {
+  background-color: white;
+  padding: 1rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.review-card img {
+  border-radius: 0.25rem;
+  margin-bottom: 0.5rem;
+} 
