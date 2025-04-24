@@ -1,0 +1,14 @@
+github commit message format:
+<type>(<scope>): <short description>
+
+Type:       Meaning:
+feat	    Adding a new feature
+fix	        Fixing a bug
+refactor	Improving code without changing functionality
+docs	    Documentation changes
+test	    Adding or updating tests
+chore	    Maintenance tasks (e.g., formatting, updating dependencies)
+
+example: feat(index): added basic html skeleton
+or 
+docs(README): updated features list
