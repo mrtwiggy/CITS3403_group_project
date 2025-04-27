@@ -1,1 +1,65 @@
-/* to be filled with style for profile page*/
+/* Custom styles for profile page */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Profile header styles */
+.profile-header {
+    @apply bg-gradient-to-r from-pink-100 to-yellow-100;
+}
+
+/* Stats card styles */
+.stats-card {
+    @apply bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition-shadow duration-200;
+}
+
+.stats-value {
+    @apply text-3xl font-bold text-pink-600;
+}
+
+.stats-label {
+    @apply text-gray-600 text-sm;
+}
+
+/* Achievement styles */
+.achievement-icon {
+    @apply transition-transform duration-200 hover:scale-110;
+}
+
+.achievement-badge {
+    @apply bg-pink-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-2;
+}
+
+/* Review card styles */
+.review-card {
+    @apply border rounded-lg p-4 hover:shadow-md transition-shadow duration-200;
+}
+
+.review-rating {
+    @apply text-yellow-500;
+}
+
+/* Level badge styles */
+.level-badge {
+    @apply bg-pink-100 text-pink-800 px-3 py-1 rounded-full text-sm;
+}
+
+/* Streak styles */
+.streak-count {
+    @apply text-pink-600 font-bold;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .stats-grid {
+        @apply grid-cols-1;
+    }
+    
+    .achievements-grid {
+        @apply grid-cols-2;
+    }
+    
+    .reviews-grid {
+        @apply grid-cols-1;
+    }
+}

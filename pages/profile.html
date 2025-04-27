@@ -1,1 +1,117 @@
-<!-- to be filled with profile page -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BobaBoard - Profile</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <link rel="stylesheet" href="../css/profile.css">
+</head>
+<body class="bg-yellow-50 text-gray-800">
+    <!-- Header -->
+    <header class="bg-pink-200 p-4 shadow-md">
+        <div class="max-w-6xl mx-auto flex justify-between items-center px-4 sm:px-6 lg:px-8">
+            <h1 class="text-2xl font-bold">🧋 BobaBoard</h1>
+            <nav>
+                <ul class="flex space-x-4">
+                    <li><a href="home.html" class="hover:underline font-medium">Home</a></li>
+                    <li><a href="explore.html" class="hover:underline font-medium">Explore</a></li>
+                    <li><a href="reviews.html" class="hover:underline font-medium">Upload</a></li>
+                    <li><a href="profile.html" class="hover:underline font-medium">Profile</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto p-6 px-4 sm:px-6 lg:px-8">
+        <!-- Profile Header -->
+        <div class="bg-white rounded-2xl shadow-md p-6 mb-6">
+            <div class="flex items-center">
+                <img src="https://via.placeholder.com/100" alt="Profile" class="rounded-full mr-6">
+                <div>
+                    <h2 class="text-3xl font-bold">BobaMaster</h2>
+                    <p class="text-gray-600">Level 15 Boba Enthusiast</p>
+                    <div class="flex items-center mt-2">
+                        <span class="text-yellow-500">⭐</span>
+                        <span class="ml-1">4.8 (120 reviews)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+            <!-- Total Bobas -->
+            <div class="bg-white rounded-2xl shadow-md p-6 text-center">
+                <h3 class="text-xl font-bold mb-2">Total Bobas</h3>
+                <p class="text-3xl text-pink-600">1,234</p>
+            </div>
+
+            <!-- Current Streak -->
+            <div class="bg-white rounded-2xl shadow-md p-6 text-center">
+                <h3 class="text-xl font-bold mb-2">Current Streak</h3>
+                <p class="text-3xl text-pink-600">45 days</p>
+            </div>
+
+            <!-- Favorite Store -->
+            <div class="bg-white rounded-2xl shadow-md p-6 text-center">
+                <h3 class="text-xl font-bold mb-2">Favourite Store</h3>
+                <p class="text-2xl text-pink-600">Gong Cha</p>
+            </div>
+
+            <!-- Top Flavor -->
+            <div class="bg-white rounded-2xl shadow-md p-6 text-center">
+                <h3 class="text-xl font-bold mb-2">Favourite Drink</h3>
+                <p class="text-2xl text-pink-600">Brown Sugar</p>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="bg-white rounded-2xl shadow-md p-6">
+            <h3 class="text-2xl font-bold mb-4">Recent Activity</h3>
+            <div class="space-y-4">
+                <!-- Activity Entry 1 -->
+                <div class="flex items-center p-3 border-b">
+                    <div class="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mr-4">
+                        <span class="text-2xl">🧋</span>
+                    </div>
+                    <div>
+                        <p class="font-medium">Tried Brown Sugar Milk Tea at Gong Cha</p>
+                        <p class="text-sm text-gray-600">2 hours ago</p>
+                    </div>
+                </div>
+
+                <!-- Activity Entry 2 -->
+                <div class="flex items-center p-3 border-b">
+                    <div class="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mr-4">
+                        <span class="text-2xl">⭐</span>
+                    </div>
+                    <div>
+                        <p class="font-medium">Left a 5-star review for Chatime</p>
+                        <p class="text-sm text-gray-600">1 day ago</p>
+                    </div>
+                </div>
+
+                <!-- Activity Entry 3 -->
+                <div class="flex items-center p-3">
+                    <div class="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mr-4">
+                        <span class="text-2xl">🏆</span>
+                    </div>
+                    <div>
+                        <p class="font-medium">Achieved "Boba Connoisseur" badge</p>
+                        <p class="text-sm text-gray-600">3 days ago</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-pink-200 p-4 text-center mt-10">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <p>&copy; 2025 BobaBoard. Made with 🧋 and ❤️.</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BobaBoard - Explore</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <link rel="stylesheet" href="../css/explore.css">
+</head>
+<body class="bg-yellow-50 text-gray-800 min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-pink-200 p-4 shadow-md">
+        <div class="max-w-6xl mx-auto flex justify-between items-center px-4 sm:px-6 lg:px-8">
+            <h1 class="text-2xl font-bold">🧋 BobaBoard</h1>
+            <nav>
+                <ul class="flex space-x-4">
+                    <li><a href="home.html" class="hover:underline font-medium">Home</a></li>
+                    <li><a href="explore.html" class="hover:underline font-medium">Explore</a></li>
+                    <li><a href="reviews.html" class="hover:underline font-medium">Upload</a></li>
+                    <li><a href="profile.html" class="hover:underline font-medium">Profile</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <h2 class="text-3xl font-bold mb-6 text-center">Boba Leaderboard</h2>
+        
+        <!-- Time Period Selector -->
+        <div class="flex justify-center mb-8">
+            <div class="bg-white p-2 rounded-lg shadow-md">
+                <button class="time-period-btn active">Week</button>
+                <button class="time-period-btn">Month</button>
+                <button class="time-period-btn">Year</button>
+                <button class="time-period-btn">All Time</button>
+            </div>
+        </div>
+
+        <!-- Leaderboard -->
+        <div class="bg-white rounded-2xl shadow-md p-6">
+            <!-- Header Row -->
+            <div class="grid grid-cols-12 gap-1 font-semibold mb-4 pb-2 border-b">
+                <div class="col-span-1 text-center">Rank</div>
+                <div class="col-span-2">User</div>
+                <div class="col-span-3">Favourite Store</div>
+                <div class="col-span-2 text-center">Total Bobas</div>
+                <div class="col-span-2 text-center">This Week</div>
+                <div class="col-span-2 text-center">Streak</div>
+            </div>
+
+            <!-- Skeleton Rows -->
+            <div class="space-y-4">
+                <!-- Row 1 -->
+                <div class="grid grid-cols-12 gap-1 items-center p-2">
+                    <div class="col-span-1 font-bold text-2xl text-center">1</div>
+                    <div class="col-span-2 flex items-center">
+                        <div class="w-10 h-10 bg-gray-200 rounded-full"></div>
+                        <span class="ml-2">Loading...</span>
+                    </div>
+                    <div class="col-span-3">Loading...</div>
+                    <div class="col-span-2 text-center">-</div>
+                    <div class="col-span-2 text-center">-</div>
+                    <div class="col-span-2 text-center">-</div>
+                </div>
+
+                <!-- Row 2 -->
+                <div class="grid grid-cols-12 gap-1 items-center p-2">
+                    <div class="col-span-1 font-bold text-2xl text-center">2</div>
+                    <div class="col-span-2 flex items-center">
+                        <div class="w-10 h-10 bg-gray-200 rounded-full"></div>
+                        <span class="ml-2">Loading...</span>
+                    </div>
+                    <div class="col-span-3">Loading...</div>
+                    <div class="col-span-2 text-center">-</div>
+                    <div class="col-span-2 text-center">-</div>
+                    <div class="col-span-2 text-center">-</div>
+                </div>
+
+                <!-- Row 3 -->
+                <div class="grid grid-cols-12 gap-1 items-center p-2">
+                    <div class="col-span-1 font-bold text-2xl text-center">3</div>
+                    <div class="col-span-2 flex items-center">
+                        <div class="w-10 h-10 bg-gray-200 rounded-full"></div>
+                        <span class="ml-2">Loading...</span>
+                    </div>
+                    <div class="col-span-3">Loading...</div>
+                    <div class="col-span-2 text-center">-</div>
+                    <div class="col-span-2 text-center">-</div>
+                    <div class="col-span-2 text-center">-</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-pink-200 p-4 text-center mt-auto">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <p>&copy; 2025 BobaBoard. Made with 🧋 and ❤️.</p>
+        </div>
+    </footer>
+</body>
+</html> 
