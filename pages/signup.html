@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BobaBoard - Sign Up</title>
+    <!-- Tailwind CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+</head>
+<body class="bg-yellow-50 text-gray-800 min-h-screen flex flex-col">
+    <!-- Header: logo only -->
+    <header class="bg-pink-200 p-4 shadow-md">
+        <div class="max-w-6xl mx-auto flex items-center px-4 sm:px-6 lg:px-8">
+            <span class="text-2xl font-bold">🧋 BobaBoard</span>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <section class="flex flex-col md:flex-row items-center justify-center gap-8 mb-12">
+            <!-- Mascot and welcome message -->
+            <div class="flex-shrink-0 flex flex-col items-center md:items-start">
+                <img src="../assets/images/bbt_mascot_image.jpg" alt="Boba mascot" class="w-40 h-40 rounded-full mb-4 shadow-lg">
+                <h2 class="text-3xl font-bold mb-2 md:mb-0 text-center md:text-left">Welcome to BobaBoard!</h2>
+            </div>
+            <!-- Signup box -->
+            <div class="max-w-md w-full bg-white p-8 rounded-2xl shadow-md">
+                <p class="text-xl mb-4 text-center md:text-left">Create your account to join the boba community!</p>
+                <form id="signup-form" class="space-y-4">
+                    <input type="text" placeholder="Username" class="w-full p-2 border rounded" required>
+                    <input type="email" placeholder="Email" class="w-full p-2 border rounded" required>
+                    <input type="password" placeholder="Password" class="w-full p-2 border rounded" required>
+                    <input type="password" placeholder="Confirm Password" class="w-full p-2 border rounded" required>
+                    <button type="submit" class="w-full bg-pink-400 text-white py-2 px-4 rounded hover:bg-pink-500">Sign Up</button>
+                </form>
+                <p class="mt-4 text-center text-gray-600">
+                    Already have an account?
+                    <a href="../index.html" class="text-pink-500 font-semibold hover:underline">Log in here</a>
+                </p>
+                <div id="signup-message" class="mt-2 text-center"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-pink-200 p-4 text-center mt-auto">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <p>&copy; 2025 BobaBoard. Made with 🧋 and ❤️.</p>
+        </div>
+    </footer>
+
+    <!-- Dummy signup logic -->
+    <script>
+        document.getElementById('signup-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // You can add validation here if you want
+            document.getElementById('signup-message').textContent = "Account created! Redirecting to login...";
+            setTimeout(function() {
+                window.location.href = '../index.html';
+            }, 1200);
+        });
+    </script>
+</body>
+</html> 
