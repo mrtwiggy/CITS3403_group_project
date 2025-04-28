@@ -8,13 +8,18 @@
     <link rel="stylesheet" href="../css/profile.css">
 </head>
 <body class="bg-yellow-50 text-gray-800">
+    <script>
+        if (!localStorage.getItem('loggedIn')) {
+            window.location.href = '../index.html';
+        }
+    </script>
+
     <!-- Header -->
     <header class="bg-pink-200 p-4 shadow-md">
         <div class="max-w-6xl mx-auto flex justify-between items-center px-4 sm:px-6 lg:px-8">
-            <h1 class="text-2xl font-bold">🧋 BobaBoard</h1>
+            <a href="../index.html" class="text-2xl font-bold hover:underline">🧋 BobaBoard</a>
             <nav>
                 <ul class="flex space-x-4">
-                    <li><a href="home.html" class="hover:underline font-medium">Home</a></li>
                     <li><a href="explore.html" class="hover:underline font-medium">Explore</a></li>
                     <li><a href="reviews.html" class="hover:underline font-medium">Upload</a></li>
                     <li><a href="profile.html" class="hover:underline font-medium">Profile</a></li>
@@ -105,6 +110,13 @@
                 </div>
             </div>
         </div>
+
+        <!-- Logout Button -->
+        <div class="flex justify-center mt-8">
+            <button id="logout-btn" class="bg-pink-400 text-white py-2 px-6 rounded hover:bg-pink-500 font-semibold">
+                Logout
+            </button>
+        </div>
     </main>
 
     <!-- Footer -->
@@ -113,5 +125,11 @@
             <p>&copy; 2025 BobaBoard. Made with 🧋 and ❤️.</p>
         </div>
     </footer>
+    <script>
+        document.getElementById('logout-btn').addEventListener('click', function() {
+            localStorage.removeItem('loggedIn');
+            window.location.href = '../index.html';
+        });
+    </script>
 </body>
 </html>
