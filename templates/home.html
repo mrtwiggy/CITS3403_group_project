@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BobaBoard - Home</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
-    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/home.css') }}">
 </head>
 <body class="bg-yellow-50 text-gray-800 min-h-screen flex flex-col">
     <header class="bg-pink-200 p-4 shadow-md">
@@ -47,6 +47,6 @@
     </footer>
 
     <!-- Toggle Login/Signup and Auth Logic -->
-    <script src="js/auth.js"></script>
+    <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
 </body>
 </html> 
