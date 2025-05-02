@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BobaBoard - Recent Reviews</title>
+    <!-- Tailwind CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+</head>
+<body class="bg-yellow-50 text-gray-800 min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-pink-200 p-4 shadow-md">
+        <div class="max-w-6xl mx-auto flex items-center justify-between px-4 sm:px-6 lg:px-8">
+            <a href="landing.html" class="text-2xl font-bold">🧋 BobaBoard</a>
+            <nav class="hidden md:flex space-x-6">
+                <a href="landing.html" class="text-gray-700 hover:text-gray-900">Back to Home</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <h1 class="text-3xl font-bold mb-8">Recent Reviews</h1>
+        
+        <!-- Review Filters -->
+        <div class="bg-white p-4 rounded-lg shadow-md mb-8">
+            <div class="flex flex-wrap gap-4">
+                <select id="franchise-select" class="p-2 border rounded" onchange="updateLocations()">
+                    <option value="">All Franchises</option>
+                    <option value="Boba Boba">Boba Boba</option>
+                    <option value="Bon Bon Cha">Bon Bon Cha</option>
+                    <option value="Chaffic">Chaffic</option>
+                    <option value="Chatime">Chatime</option>
+                    <option value="Gong Cha">Gong Cha</option>
+                    <option value="Gotcha Fresh Tea">Gotcha Fresh Tea</option>
+                    <option value="Mahci Machi">Mahci Machi</option>
+                    <option value="Once For All">Once For All</option>
+                    <option value="Milk Flower">Milk Flower</option>
+                    <option value="Presotea">Presotea</option>
+                    <option value="T4">T4</option>
+                    <option value="Teamorrow">Teamorrow</option>
+                    <option value="Utopia">Utopia</option>
+                </select>
+                <select id="location-select" class="p-2 border rounded" disabled>
+                    <option value="">Select Location</option>
+                </select>
+                <select class="p-2 border rounded">
+                    <option value="">All Ratings</option>
+                    <option value="5">5 Stars</option>
+                    <option value="4">4+ Stars</option>
+                    <option value="3">3+ Stars</option>
+                </select>
+                <select class="p-2 border rounded">
+                    <option value="recent">Most Recent</option>
+                    <option value="rating">Highest Rated</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Reviews List -->
+        <div class="space-y-6">
+            <!-- Review 1 -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h3 class="text-xl font-semibold">Boba Paradise</h3>
+                        <p class="text-gray-600">123 Bubble Street, Perth</p>
+                    </div>
+                    <div class="text-yellow-400">⭐⭐⭐⭐⭐</div>
+                </div>
+                <p class="text-gray-700 mb-4">"The brown sugar boba here is absolutely amazing! Perfect texture and sweetness. The staff is super friendly and the atmosphere is great for studying."</p>
+                <div class="flex justify-between items-center text-sm text-gray-500">
+                    <span>Posted by Sarah K. • 2 hours ago</span>
+                    <div class="flex items-center space-x-4">
+                        <button class="flex items-center space-x-1 hover:text-pink-500" onclick="showLoginPrompt()">
+                            <span>👍</span>
+                            <span>24</span>
+                        </button>
+                        <button class="hover:text-pink-500" onclick="showLoginPrompt()">💬 Comment</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Review 2 -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h3 class="text-xl font-semibold">Tea Time</h3>
+                        <p class="text-gray-600">456 Tea Avenue, Perth</p>
+                    </div>
+                    <div class="text-yellow-400">⭐⭐⭐⭐</div>
+                </div>
+                <p class="text-gray-700 mb-4">"Tried their new taro milk tea with boba. The flavor was rich and creamy, though the boba could have been a bit softer. Great value for money!"</p>
+                <div class="flex justify-between items-center text-sm text-gray-500">
+                    <span>Posted by Mike T. • 5 hours ago</span>
+                    <div class="flex items-center space-x-4">
+                        <button class="flex items-center space-x-1 hover:text-pink-500" onclick="showLoginPrompt()">
+                            <span>👍</span>
+                            <span>15</span>
+                        </button>
+                        <button class="hover:text-pink-500" onclick="showLoginPrompt()">💬 Comment</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Review 3 -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h3 class="text-xl font-semibold">Bubble World</h3>
+                        <p class="text-gray-600">789 Pearl Road, Perth</p>
+                    </div>
+                    <div class="text-yellow-400">⭐⭐⭐⭐⭐</div>
+                </div>
+                <p class="text-gray-700 mb-4">"Their fruit tea selection is incredible! The passion fruit green tea with boba is my new favorite. The boba is perfectly chewy and the tea is refreshing."</p>
+                <div class="flex justify-between items-center text-sm text-gray-500">
+                    <span>Posted by Emma L. • 1 day ago</span>
+                    <div class="flex items-center space-x-4">
+                        <button class="flex items-center space-x-1 hover:text-pink-500" onclick="showLoginPrompt()">
+                            <span>👍</span>
+                            <span>32</span>
+                        </button>
+                        <button class="hover:text-pink-500" onclick="showLoginPrompt()">💬 Comment</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Load More Button -->
+        <div class="text-center mt-8">
+            <button class="bg-pink-400 text-white py-2 px-6 rounded-full hover:bg-pink-500 transition duration-300" onclick="showLoginPrompt()">
+                Load More Reviews
+            </button>
+        </div>
+    </main>
+
+    <!-- Login Prompt Modal -->
+    <div id="loginPrompt" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
+        <div class="bg-white p-8 rounded-lg max-w-md w-full mx-4">
+            <h2 class="text-2xl font-bold mb-4">Sign In Required</h2>
+            <p class="text-gray-600 mb-6">Please sign in to view more reviews and interact with the community.</p>
+            <div class="flex justify-end space-x-4">
+                <button onclick="hideLoginPrompt()" class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancel</button>
+                <a href="../index.html" class="bg-pink-400 text-white px-4 py-2 rounded hover:bg-pink-500">Sign In</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-pink-200 p-4 text-center mt-auto">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <p>&copy; 2025 BobaBoard. Made with 🧋 and ❤️.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Store locations data
+        const locations = {
+            "Boba Boba": [
+                "Altone Park", "Belmont", "Cockburn", "Kingsway", "Morley", "Murdoch", 
+                "Myaree", "Nedlands", "Northbridge", "Piara Waters", "Victoria Park", 
+                "Willeton", "Joondalup - Bobabot"
+            ],
+            "Bon Bon Cha": [
+                "Forrest Lakes", "Harrisdale", "Willeton"
+            ],
+            "Chaffic": [
+                "Baldivis", "Belmont", "Claremont", "Forrest Chase", "Karrinyup", 
+                "Midland", "Mirrabooka", "Northbridge", "Victoria Park", "Willetton"
+            ],
+            "Chatime": [
+                "Armadale", "Cannington", "East Victoria Park", "Ellenbrook", "Forrestfield", 
+                "Hillarys", "Joondalup", "Karawara", "Karrinyup", "Lakelands", "Leederville", 
+                "Mandurah", "Midland", "Murdoch", "Southern River", "Waterford Plaza", "Willetton"
+            ],
+            "Gong Cha": [
+                "Cannington", "Innaloo", "Northbridge", "Warwick"
+            ],
+            "Gotcha Fresh Tea": [
+                "Booragoon", "Karrinyup"
+            ],
+            "Mahci Machi": [
+                "Carousel", "Claremont", "East Victoria Park"
+            ],
+            "Once For All": [
+                "Harrisdale", "Rockingham"
+            ],
+            "Milk Flower": [
+                "Cannington", "Joondalup", "Karrinyup", "Morley", "Northbridge"
+            ],
+            "Presotea": [
+                "Canning Vale", "Cannington", "Cockburn", "East Victoria Park", "Ellenbrook", 
+                "Innaloo", "Joondalup", "Leederville", "Morley", "Mount Lawley", "Myaree", 
+                "Nedlands", "Northbridge", "Perth (Barrack Street)", "Perth (Raine Square)", 
+                "Perth (Newcastle Street)", "Success"
+            ],
+            "T4": [
+                "Canning Vale", "East Victoria Park", "Fremantle", "Innaloo", "Morley", 
+                "Myaree", "Northbridge"
+            ],
+            "Teamorrow": [
+                "Booragoon", "East Victoria Park", "Morley", "Northbridge"
+            ],
+            "Utopia": [
+                "Cannington", "Fremantle", "Joondalup", "Morley", "Myaree", "Perth Airport", 
+                "Riverton", "Rockingham", "Victoria Park", "Wembley", "Willetton"
+            ]
+        };
+
+        function updateLocations() {
+            const franchiseSelect = document.getElementById('franchise-select');
+            const locationSelect = document.getElementById('location-select');
+            const selectedFranchise = franchiseSelect.value;
+
+            // Clear current options
+            locationSelect.innerHTML = '<option value="">Select Location</option>';
+
+            if (selectedFranchise && locations[selectedFranchise]) {
+                // Enable location select
+                locationSelect.disabled = false;
+
+                // Add new options
+                locations[selectedFranchise].forEach(location => {
+                    const option = document.createElement('option');
+                    option.value = location;
+                    option.textContent = location;
+                    locationSelect.appendChild(option);
+                });
+            } else {
+                // Disable location select if no franchise selected
+                locationSelect.disabled = true;
+            }
+        }
+
+        function showLoginPrompt() {
+            document.getElementById('loginPrompt').classList.remove('hidden');
+        }
+
+        function hideLoginPrompt() {
+            document.getElementById('loginPrompt').classList.add('hidden');
+        }
+    </script>
+</body>
+</html> 
