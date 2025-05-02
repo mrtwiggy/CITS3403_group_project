@@ -14,5 +14,13 @@ def signup():
 def reviews():
     return render_template("reviews.html")
 
+@app.route("/profile")
+def profile():
+    return render_template("profile.html")
+
+@app.route("/explore")
+def explore():
+    return render_template("explore.html")
+
 if __name__ == "__main__":
     app.run(debug= True, port= yaml_options["server_port"])
