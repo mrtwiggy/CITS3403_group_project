@@ -8,12 +8,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='/css/profile.css') }}">
 </head>
 <body class="bg-yellow-50 text-gray-800">
-    <script>
-        if (!localStorage.getItem('loggedIn')) {
-            window.location.href = '../index.html';
-        }
-    </script>
-
     <!-- Header -->
     <header class="bg-pink-200 p-4 shadow-md">
         <div class="max-w-6xl mx-auto flex justify-between items-center px-4 sm:px-6 lg:px-8">
