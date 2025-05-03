@@ -39,6 +39,42 @@ a
 
 Are you interested in using BobaBoard for your business? Below are a detailed list of instructions on how to deploy your own instance of BobaBoard.
 
+**Setting up the Python environment:**
+
+1. Create the environment:
+   
+   ```shell
+   python3 -m venv venv
+   ```
+
+2. Enter the environment:
+   
+   ```shell
+   source venv/bin/activate
+   ```
+
+3. Install the required packages:
+   
+   ```python
+   pip install -r requirements.txt
+   ```
+
+4. Set the config options by editing the `config.yml` file with your preferred text editor.
+   
+   Example `config.yml` file:
+   
+   ```yaml
+   server_port: 5001
+   ```
+
+5. Launch the Flask application:
+   
+   ```shell
+   python app.py
+   ```
+
+6. Go to `http://localhost:<server_port>` (in this case it would be 5001 according to the `config.yml` file from step 4).
+
 ---
 
 ## Contributing
