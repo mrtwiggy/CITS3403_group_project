@@ -35,7 +35,7 @@
                 </form>
                 <p class="mt-4 text-center text-gray-600">
                     Already have an account?
-                    <a href="../index.html" class="text-pink-500 font-semibold hover:underline">Log in here</a>
+                    <a href="{{ url_for('home') }}" class="text-pink-500 font-semibold hover:underline">Log in here</a>
                 </p>
                 <div id="signup-message" class="mt-2 text-center"></div>
             </div>
@@ -48,17 +48,5 @@
             <p>&copy; 2025 BobaBoard. Made with 🧋 and ❤️.</p>
         </div>
     </footer>
-
-    <!-- Dummy signup logic -->
-    <script>
-        document.getElementById('signup-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            // You can add validation here if you want
-            document.getElementById('signup-message').textContent = "Account created! Redirecting to login...";
-            setTimeout(function() {
-                window.location.href = '../index.html';
-            }, 1200);
-        });
-    </script>
 </body>
 </html> 

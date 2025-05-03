@@ -5,23 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BobaBoard - Explore</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
-    <link rel="stylesheet" href="../css/explore.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/explore.css') }}">
 </head>
 <body class="bg-yellow-50 text-gray-800 min-h-screen flex flex-col">
-<script>
-    if (!localStorage.getItem('loggedIn')) {
-        window.location.href = '../index.html';
-    }
-</script>
     <!-- Header -->
     <header class="bg-pink-200 p-4 shadow-md">
         <div class="max-w-6xl mx-auto flex justify-between items-center px-4 sm:px-6 lg:px-8">
-            <a href="../index.html" class="text-2xl font-bold hover:underline">🧋 BobaBoard</a>
+            <a href="{{ url_for('home') }}" class="text-2xl font-bold hover:underline">🧋 BobaBoard</a>
             <nav>
                 <ul class="flex space-x-4">
-                    <li><a href="explore.html" class="hover:underline font-medium">Explore</a></li>
-                    <li><a href="reviews.html" class="hover:underline font-medium">Upload</a></li>
-                    <li><a href="profile.html" class="hover:underline font-medium">Profile</a></li>
+                    <li><a href="{{ url_for('explore') }}" class="hover:underline font-medium">Explore</a></li>
+                    <li><a href="{{ url_for('reviews') }}" class="hover:underline font-medium">Upload</a></li>
+                    <li><a href="{{ url_for('profile') }}" class="hover:underline font-medium">Profile</a></li>
                 </ul>
             </nav>
         </div>
