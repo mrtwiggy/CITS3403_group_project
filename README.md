@@ -6,12 +6,12 @@ This is the readme file for the BobaBoard website.
 
 > Addresses requirement [2](#req_2).
 
-| Name             | UWA Student Number | Github username |
-| ---------------- | ------------------ | --------------- |
-| Henuka Daluwatta | 23335255           | @Teloshav       |
-|                  |                    |                 |
-|                  |                    |                 |
-|                  |                    |                 |
+| Name             | UWA Student Number | Github username                          |
+| ---------------- | ------------------ | ---------------------------------------- |
+| Henuka Daluwatta | 23335255           | [@Teloshav](https://github.com/Teloshav) |
+|                  |                    |                                          |
+|                  |                    |                                          |
+|                  |                    |                                          |
 
 ---
 
@@ -19,9 +19,9 @@ This is the readme file for the BobaBoard website.
 
 > Addresses requirement [1](#req_1).
 
-| Table to show designs of pages at the moment |     |
-| -------------------------------------------- | --- |
-|                                              |     |
+| Table to show designs of pages at the moment |
+| -------------------------------------------- |
+|                                              |
 
 ---
 
