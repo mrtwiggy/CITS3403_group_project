@@ -14,9 +14,9 @@
             <a href="../index.html" class="text-2xl font-bold hover:underline">🧋 BobaBoard</a>
             <nav>
                 <ul class="flex space-x-4">
-                    <li><a href="explore.html" class="hover:underline font-medium">Explore</a></li>
-                    <li><a href="reviews.html" class="hover:underline font-medium">Upload</a></li>
-                    <li><a href="profile.html" class="hover:underline font-medium">Profile</a></li>
+                    <li><a href="{{ url_for('explore') }}" class="hover:underline font-medium">Explore</a></li>
+                    <li><a href="{{ url_for('reviews') }}" class="hover:underline font-medium">Upload</a></li>
+                    <li><a href="{{ url_for('profile') }}" class="hover:underline font-medium">Profile</a></li>
                 </ul>
             </nav>
         </div>
@@ -119,11 +119,5 @@
             <p>&copy; 2025 BobaBoard. Made with 🧋 and ❤️.</p>
         </div>
     </footer>
-    <script>
-        document.getElementById('logout-btn').addEventListener('click', function() {
-            localStorage.removeItem('loggedIn');
-            window.location.href = '../index.html';
-        });
-    </script>
 </body>
 </html>
