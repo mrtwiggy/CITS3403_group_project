@@ -95,5 +95,14 @@ def recent_reviews():
     # This can be implemented later with actual review data
     return render_template('recent_reviews.html')
 
+@app.route('/explore')
+def explore():
+    return render_template('explore.html')
+
+# Route for recent reviews (referenced in landing.html)
+@app.route('/reviews')
+def reviews():
+    return render_template('reviews.html')
+
 if __name__ == '__main__':
     app.run(debug=True)

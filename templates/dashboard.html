@@ -3,6 +3,11 @@
 {% block title %}Dashboard - BobaBoard{% endblock %}
 
 {% block content %}
+    <div class="flex justify-end mb-6">
+        <a href="{{ url_for('logout') }}" class="bg-pink-400 text-white px-4 py-2 rounded hover:bg-pink-500 font-semibold shadow">
+            Logout
+        </a>
+    </div>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         <!-- Profile Section -->
         <div class="md:col-span-1">

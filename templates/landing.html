@@ -1,3 +1,8 @@
+{% extends "base.html" %}
+
+{% block title %}BobaBoard - Discover the Best Boba Shops{% endblock %}
+
+{% block content %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,15 +13,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
 </head>
 <body class="bg-yellow-50 text-gray-800 min-h-screen flex flex-col">
-    <!-- Header -->
-    <header class="bg-pink-200 p-4 shadow-md">
-        <div class="max-w-6xl mx-auto flex items-center justify-between px-4 sm:px-6 lg:px-8">
-            <span class="text-2xl font-bold">🧋 BobaBoard</span>
-            <nav class="hidden md:flex space-x-6">
-                <a href="{{ url_for('recent_reviews') }}" class="text-gray-700 hover:text-gray-900">Recent Reviews</a>
-            </nav>
-        </div>
-    </header>
 
     <!-- Hero Section -->
     <section class="py-16 bg-gradient-to-b from-pink-100 to-yellow-50">
@@ -131,13 +127,6 @@
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="bg-pink-200 p-4 text-center mt-auto">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <p>&copy; 2025 BobaBoard. Made with 🧋 and ❤️.</p>
-        </div>
-    </footer>
-
     <style>
         .typing-container {
             min-height: 3rem;
@@ -220,4 +209,17 @@
         typePhrase();
     </script>
 </body>
-</html> 
+</html>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ... typing animation styles ... */
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // ... typing animation JS ...
+</script>
+{% endblock %} 

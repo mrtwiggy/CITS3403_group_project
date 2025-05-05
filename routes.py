@@ -5,6 +5,8 @@ from models import User, Review, Shop
 
 @app.route('/')
 def landing():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
     return render_template('landing.html')
 
 @app.route('/signup', methods=['GET', 'POST'])
