@@ -5,6 +5,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, EmailField
 from wtforms.validators import DataRequired, Length, Email, EqualTo
 from models import db, User
+import yaml
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'change_this_to_something_secure'
@@ -58,6 +59,12 @@ def signup():
         return redirect(url_for('login'))
     return render_template('signup.html', form=form)
 
+# Config parsing
+with open('config.yml', 'r') as file:
+    config = yaml.safe_load(file)
+
+# App routes
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     # If user is already logged in, redirect to dashboard
@@ -96,4 +103,4 @@ def recent_reviews():
     return render_template('recent_reviews.html')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=config["server_port"])
