@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - BobaBoard{% endblock %}
+
+{% block content %}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Profile Section -->
+        <div class="md:col-span-1">
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="text-center mb-6">
+                    <div class="w-24 h-24 bg-pink-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+                        <span class="text-4xl">👤</span>
+                    </div>
+                    <h2 class="text-2xl font-bold">{{ current_user.username }}</h2>
+                    <p class="text-gray-600">{{ current_user.email }}</p>
+                </div>
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Member since</span>
+                        <span class="font-medium">{{ current_user.created_at.strftime('%B %Y') }}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Reviews</span>
+                        <span class="font-medium">{{ current_user.reviews|length }}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Achievements</span>
+                        <span class="font-medium">0/4</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity Section -->
+        <div class="md:col-span-2">
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <h2 class="text-2xl font-bold mb-6">Recent Activity</h2>
+                
+                {% if current_user.reviews %}
+                    <div class="space-y-6">
+                        {% for review in current_user.reviews[:5] %}
+                            <div class="border-b border-gray-200 pb-6 last:border-0 last:pb-0">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h3 class="text-lg font-semibold">{{ review.shop.name }}</h3>
+                                    <div class="text-yellow-400">
+                                        {% for i in range(review.rating) %}⭐{% endfor %}
+                                    </div>
+                                </div>
+                                <p class="text-gray-600 mb-2">{{ review.content }}</p>
+                                <div class="text-sm text-gray-500">
+                                    {{ review.created_at.strftime('%B %d, %Y') }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-8">
+                        <p class="text-gray-600">No reviews yet. Start exploring boba shops!</p>
+                        <a href="{{ url_for('recent_reviews') }}" class="mt-4 inline-block bg-pink-400 text-white py-2 px-4 rounded-full hover:bg-pink-500 transition duration-300">
+                            Find Shops
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %} 
