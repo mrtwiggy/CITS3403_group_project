@@ -87,6 +87,8 @@ def logout():
 
 @app.route('/')
 def landing():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
     return render_template('landing.html')
 
 # Route for recent reviews (referenced in landing.html)
