@@ -1,5 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, flash, request
-from flask_sqlalchemy import SQLAlchemy
+from flask import Flask
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, EmailField
@@ -13,6 +12,8 @@ db.init_app(app)
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
+
+from routes import *
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -35,76 +36,6 @@ class SignupForm(FlaskForm):
 # Create tables before first request (Flask 2.0+ compatible method)
 with app.app_context():
     db.create_all()
-
-@app.route('/signup', methods=['GET', 'POST'])
-def signup():
-    form = SignupForm()
-    if form.validate_on_submit():
-        if User.query.filter_by(username=form.username.data).first():
-            flash('Username already exists')
-            return redirect(url_for('signup'))
-        
-        if User.query.filter_by(email=form.email.data).first():
-            flash('Email already exists')
-            return redirect(url_for('signup'))
-        
-        # Create new user with proper password hashing
-        user = User(username=form.username.data, email=form.email.data)
-        user.set_password(form.password.data)
-        db.session.add(user)
-        db.session.commit()
-        
-        flash('Account created! Please log in.')
-        return redirect(url_for('login'))
-    return render_template('signup.html', form=form)
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    # If user is already logged in, redirect to dashboard
-    if current_user.is_authenticated:
-        return redirect(url_for('dashboard'))
-        
-    form = LoginForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        # Use the check_password method from the User model
-        if user and user.check_password(form.password.data):
-            login_user(user)
-            return redirect(url_for('dashboard'))
-        flash('Invalid email or password', 'error')
-    return render_template('login.html', form=form)
-
-@app.route('/dashboard')
-@login_required
-def dashboard():
-    return render_template('dashboard.html')
-
-@app.route('/logout')
-@login_required
-def logout():
-    logout_user()
-    return redirect(url_for('login'))
-
-@app.route('/')
-def landing():
-    if current_user.is_authenticated:
-        return redirect(url_for('dashboard'))
-    return render_template('landing.html')
-
-# Route for recent reviews (referenced in landing.html)
-@app.route('/recent_reviews')
-def recent_reviews():
-    # This can be implemented later with actual review data
-    return render_template('recent_reviews.html')
-
-@app.route('/explore')
-def explore():
-    return render_template('explore.html')
-
-# Route for recent reviews (referenced in landing.html)
-@app.route('/reviews')
-def reviews():
-    return render_template('reviews.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

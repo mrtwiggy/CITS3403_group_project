@@ -11,7 +11,7 @@
     <!-- Header -->
     <header class="bg-pink-200 p-4 shadow-md">
         <div class="max-w-6xl mx-auto flex items-center justify-between px-4 sm:px-6 lg:px-8">
-            <a href="{{ url_for('landing') }}" class="text-2xl font-bold">🧋 BobaBoard</a>
+            <a href="{{ url_for('index') }}" class="text-2xl font-bold">🧋 BobaBoard</a>
             <nav class="hidden md:flex space-x-6">
                 {% if current_user.is_authenticated %}
                     <a href="{{ url_for('explore') }}" class="text-gray-700 hover:text-gray-900">Explore</a>
