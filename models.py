@@ -13,6 +13,8 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)  # Email is now required
     password_hash = db.Column(db.String(128))  # Hashed password
     created_at = db.Column(db.DateTime, default=datetime.now)
+    logged_in_at = db.Column(db.DateTime, nullable=True)
+    profile_pic = db.Column(db.String(255), nullable=True, default='profilepic1.png')
 
     # Set the user's password (hashes it for security)
     def set_password(self, password):

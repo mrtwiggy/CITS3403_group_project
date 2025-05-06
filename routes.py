@@ -28,6 +28,7 @@ def signup():
         return redirect(url_for('login'))
     return render_template('signup.html', form=form)
 
+#route for login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -42,10 +43,21 @@ def login():
         flash('Invalid email or password', 'error')
     return render_template('login.html', form=form)
 
+#route for dashboard
 @app.route('/dashboard')
 @login_required
 def dashboard():
     return render_template('dashboard.html')
+
+#route to update profile pic
+@app.route('/update_profile_pic', methods=['POST'])
+@login_required
+def update_profile_pic():
+    selected_pic = request.form.get('profile_pic')
+    current_user.profile_pic = selected_pic
+    db.session.commit()
+    flash('Profile picture updated!', 'success')
+    return redirect(url_for('dashboard'))
 
 @app.route('/logout')
 @login_required

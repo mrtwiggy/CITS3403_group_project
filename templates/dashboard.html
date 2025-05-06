@@ -13,9 +13,36 @@
         <div class="md:col-span-1">
             <div class="bg-white rounded-xl shadow-md p-6">
                 <div class="text-center mb-6">
-                    <div class="w-24 h-24 bg-pink-100 rounded-full mx-auto mb-4 flex items-center justify-center">
-                        <span class="text-4xl">👤</span>
+                    <!-- Profile Picture Display -->
+                    <div class="w-24 h-24 rounded-full mx-auto mb-4 overflow-hidden">
+                        <img src="{{ url_for('static', filename='profile_pics/' + current_user.profile_pic) }}" 
+                            alt="Profile Picture" 
+                            class="w-full h-full object-cover">
                     </div>
+                    
+                    <!-- Profile Picture Selection -->
+                    <form action="{{ url_for('update_profile_pic') }}" method="post" class="mb-4">
+                        <div class="flex items-center justify-center">
+                            <select name="profile_pic" class="rounded-l-md border border-gray-300 py-1 px-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500">
+                                <option value="profilepic1.png">Avatar 1</option>
+                                <option value="profilepic2.png">Avatar 2</option>
+                                <option value="profilepic3.png">Avatar 3</option>
+                                <option value="profilepic4.png">Avatar 4</option>
+                                <option value="profilepic5.png">Avatar 5</option>
+                                <option value="profilepic6.png">Avatar 6</option>
+                                <option value="profilepic7.png">Avatar 7</option>
+                                <option value="profilepic8.png">Avatar 8</option>
+                                <option value="profilepic9.png">Avatar 9</option>
+                                <option value="profilepic10.png">Avatar 10</option>
+                                
+
+                            </select>
+                            <button type="submit" class="bg-pink-500 text-white rounded-r-md py-1 px-3 text-sm hover:bg-pink-600 transition">
+                                Update
+                            </button>
+                        </div>
+                    </form>
+                    
                     <h2 class="text-2xl font-bold">{{ current_user.username }}</h2>
                     <p class="text-gray-600">{{ current_user.email }}</p>
                 </div>
