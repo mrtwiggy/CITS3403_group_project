@@ -13,7 +13,12 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)  # Email is now required
     password_hash = db.Column(db.String(128))  # Hashed password
     created_at = db.Column(db.DateTime, default=datetime.now)
+    last_login_at    = db.Column(db.DateTime,   nullable=True)
+    profile_pic_url  = db.Column(db.String(255),nullable=True)
+    reviews = db.relationship('Review', back_populates='user', lazy='dynamic')
 
+    def __repr__(self):
+        return f"<User {self.username}>"
     # Set the user's password (hashes it for security)
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
