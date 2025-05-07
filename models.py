@@ -8,15 +8,15 @@ db = SQLAlchemy()
 
 # User Table
 class User(UserMixin, db.Model):
+    __tablename__ = 'users'
+
     id = db.Column(db.Integer, primary_key=True)  # Unique user ID
     username = db.Column(db.String(80), unique=True, nullable=False)  # Username (must be unique)
     email = db.Column(db.String(120), unique=True, nullable=False)  # Email is now required
     password_hash = db.Column(db.String(128))  # Hashed password
     created_at = db.Column(db.DateTime, default=datetime.now)
-    logged_in_at = db.Column(db.DateTime, nullable=True)
-    profile_pic = db.Column(db.String(255), nullable=True, default='profilepic1.png')
-    last_login_at    = db.Column(db.DateTime,   nullable=True)
-    profile_pic_url  = db.Column(db.String(255),nullable=True)
+    logged_in_at  = db.Column(db.DateTime,   nullable=True)
+    profile_pic  = db.Column(db.String(255),nullable=True, default='profilepic1.png')
 
     reviews = db.relationship('Review', back_populates='user', lazy='dynamic')
 
@@ -46,7 +46,7 @@ class Review(db.Model):
     sugar_level = db.Column(db.String(20),nullable=True)   # e.g. “25%”, “Half”
     ice_level = db.Column(db.String(20),nullable=True)   # e.g. “No ice”, “Light ice”
     review_rating = db.Column(db.Integer,nullable=False)  # e.g. 1–5
-    uploaded_at = db.Column(db.DateTime,nullable=False, default=datetime.utcnow)
+    uploaded_at = db.Column(db.DateTime,nullable=False, default=datetime.now)
 
     # relationships
     user = db.relationship('User',back_populates='reviews')
@@ -56,3 +56,36 @@ class Review(db.Model):
 
     def __repr__(self):
         return f"<Review {self.id} by User {self.user_id}>"
+
+# Franchises table
+class Franchise(db.Model):
+    __tablename__ = 'franchises'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    locations = db.relationship('Location', secondary='franchise_location', backref='franchises')
+
+# Locations table
+class Location(db.Model):
+    __tablename__ = 'locations'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+
+# Drinks table
+class Drink(db.Model):
+    __tablename__ = 'drinks'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    locations = db.relationship('Location', secondary='location_drink', backref='drinks')
+
+# Junction table for Drinks and Locations (many-to-many)
+class LocationDrink(db.Model):
+    drink_id = db.Column(db.Integer, db.ForeignKey('drinks.id'), primary_key=True)
+    location_id = db.Column(db.Integer, db.ForeignKey('locations.id'), primary_key=True)
+
+# Junction table for Franchises and Locations (many-to-many)
+class FranchiseLocation(db.Model):
+    franchise_id = db.Column(db.Integer, db.ForeignKey('franchises.id'), primary_key=True)
+    location_id = db.Column(db.Integer, db.ForeignKey('locations.id'), primary_key=True)
