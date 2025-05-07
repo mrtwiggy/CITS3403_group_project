@@ -3,13 +3,13 @@
 /* Global styles */
 
 /* Navigation link hover animation */
-nav a {
+header nav a {
     position: relative;
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
-nav a::after {
+header nav a::after {
     content: '';
     position: absolute;
     width: 0;
@@ -20,6 +20,6 @@ nav a::after {
     transition: width 0.3s ease;
 }
 
-nav a:hover::after {
+header nav a:hover::after {
     width: 100%;
 }

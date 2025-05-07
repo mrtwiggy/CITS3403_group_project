@@ -9,6 +9,14 @@
     <!-- Review Filters -->
     <div class="bg-white p-4 rounded-lg shadow-md mb-8">
         <div class="flex flex-wrap gap-4">
+            <!-- Search Bar -->
+            <div class="w-full md:w-auto flex-grow">
+                <input type="text" 
+                       id="review-search" 
+                       placeholder="Search reviews..." 
+                       class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-pink-500"
+                       onkeyup="filterReviews()">
+            </div>
             <select id="franchise-select" class="p-2 border rounded" onchange="updateLocations()">
                 <option value="">All Franchises</option>
                 <option value="Boba Boba">Boba Boba</option>
@@ -42,9 +50,9 @@
     </div>
 
     <!-- Reviews List -->
-    <div class="space-y-6">
+    <div class="space-y-6" id="reviews-container">
         <!-- Review 1 -->
-        <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="bg-white p-6 rounded-lg shadow-md review-card">
             <div class="flex justify-between items-start mb-4">
                 <div>
                     <h3 class="text-xl font-semibold">Boba Paradise</h3>
@@ -56,17 +64,23 @@
             <div class="flex justify-between items-center text-sm text-gray-500">
                 <span>Posted by Sarah K. • 2 hours ago</span>
                 <div class="flex items-center space-x-4">
-                    <button class="flex items-center space-x-1 hover:text-pink-500" onclick="showLoginPrompt()">
-                        <span>👍</span>
-                        <span>24</span>
-                    </button>
-                    <button class="hover:text-pink-500" onclick="showLoginPrompt()">💬 Comment</button>
+                    {% if current_user.is_authenticated %}
+                        <button class="flex items-center space-x-1 hover:text-pink-500">
+                            <span>👍</span>
+                            <span>24</span>
+                        </button>
+                    {% else %}
+                        <button class="flex items-center space-x-1 hover:text-pink-500" onclick="showLoginPrompt()">
+                            <span>👍</span>
+                            <span>24</span>
+                        </button>
+                    {% endif %}
                 </div>
             </div>
         </div>
 
         <!-- Review 2 -->
-        <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="bg-white p-6 rounded-lg shadow-md review-card">
             <div class="flex justify-between items-start mb-4">
                 <div>
                     <h3 class="text-xl font-semibold">Tea Time</h3>
@@ -78,17 +92,23 @@
             <div class="flex justify-between items-center text-sm text-gray-500">
                 <span>Posted by Mike T. • 5 hours ago</span>
                 <div class="flex items-center space-x-4">
-                    <button class="flex items-center space-x-1 hover:text-pink-500" onclick="showLoginPrompt()">
-                        <span>👍</span>
-                        <span>15</span>
-                    </button>
-                    <button class="hover:text-pink-500" onclick="showLoginPrompt()">💬 Comment</button>
+                    {% if current_user.is_authenticated %}
+                        <button class="flex items-center space-x-1 hover:text-pink-500">
+                            <span>👍</span>
+                            <span>15</span>
+                        </button>
+                    {% else %}
+                        <button class="flex items-center space-x-1 hover:text-pink-500" onclick="showLoginPrompt()">
+                            <span>👍</span>
+                            <span>15</span>
+                        </button>
+                    {% endif %}
                 </div>
             </div>
         </div>
 
         <!-- Review 3 -->
-        <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="bg-white p-6 rounded-lg shadow-md review-card">
             <div class="flex justify-between items-start mb-4">
                 <div>
                     <h3 class="text-xl font-semibold">Bubble World</h3>
@@ -100,35 +120,45 @@
             <div class="flex justify-between items-center text-sm text-gray-500">
                 <span>Posted by Emma L. • 1 day ago</span>
                 <div class="flex items-center space-x-4">
-                    <button class="flex items-center space-x-1 hover:text-pink-500" onclick="showLoginPrompt()">
-                        <span>👍</span>
-                        <span>32</span>
-                    </button>
-                    <button class="hover:text-pink-500" onclick="showLoginPrompt()">💬 Comment</button>
+                    {% if current_user.is_authenticated %}
+                        <button class="flex items-center space-x-1 hover:text-pink-500">
+                            <span>👍</span>
+                            <span>32</span>
+                        </button>
+                    {% else %}
+                        <button class="flex items-center space-x-1 hover:text-pink-500" onclick="showLoginPrompt()">
+                            <span>👍</span>
+                            <span>32</span>
+                        </button>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Load More Button -->
+    <!-- Load More Button - Only show for authenticated users -->
+    {% if current_user.is_authenticated %}
     <div class="text-center mt-8">
-        <button class="bg-pink-400 text-white py-2 px-6 rounded-full hover:bg-pink-500 transition duration-300" onclick="showLoginPrompt()">
+        <button class="bg-pink-400 text-white py-2 px-6 rounded-full hover:bg-pink-500 transition duration-300">
             Load More Reviews
         </button>
     </div>
+    {% endif %}
 </main>
 
-<!-- Login Prompt Modal -->
+<!-- Login Prompt Modal - Only show for non-authenticated users -->
+{% if not current_user.is_authenticated %}
 <div id="loginPrompt" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
     <div class="bg-white p-8 rounded-lg max-w-md w-full mx-4">
         <h2 class="text-2xl font-bold mb-4">Sign In Required</h2>
         <p class="text-gray-600 mb-6">Please sign in to view more reviews and interact with the community.</p>
         <div class="flex justify-end space-x-4">
             <button onclick="hideLoginPrompt()" class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancel</button>
-            <a href="../index.html" class="bg-pink-400 text-white px-4 py-2 rounded hover:bg-pink-500">Sign In</a>
+            <a href="{{ url_for('login') }}" class="bg-pink-400 text-white px-4 py-2 rounded hover:bg-pink-500">Sign In</a>
         </div>
     </div>
 </div>
+{% endif %}
 
 {% endblock %}
 
@@ -218,6 +248,22 @@
 
     function hideLoginPrompt() {
         document.getElementById('loginPrompt').classList.add('hidden');
+    }
+
+    // Search functionality
+    function filterReviews() {
+        const searchInput = document.getElementById('review-search');
+        const searchText = searchInput.value.toLowerCase();
+        const reviewCards = document.getElementsByClassName('review-card');
+
+        for (let card of reviewCards) {
+            const reviewText = card.textContent.toLowerCase();
+            if (reviewText.includes(searchText)) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        }
     }
 </script>
 {% endblock %} 
