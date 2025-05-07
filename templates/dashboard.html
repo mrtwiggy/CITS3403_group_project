@@ -53,7 +53,7 @@
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-gray-600">Reviews</span>
-                        <span class="font-medium">{{ current_user.reviews|length }}</span>
+                        <span class="font-medium">{{ current_user.reviews.all()|length }}</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-gray-600">Achievements</span>
