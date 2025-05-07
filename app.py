@@ -4,6 +4,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, EmailField
 from wtforms.validators import DataRequired, Length, Email, EqualTo
 from models import db, User
+import yaml
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'change_this_to_something_secure'
@@ -38,4 +39,4 @@ with app.app_context():
     db.create_all()
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=config["server_port"])

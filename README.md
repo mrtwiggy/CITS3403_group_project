@@ -6,12 +6,12 @@ This is the readme file for the BobaBoard website.
 
 > Addresses requirement [2](#req_2).
 
-| Name             | UWA Student Number | Github username                          |
-| ---------------- | ------------------ | ---------------------------------------- |
-| Henuka Daluwatta | 23335255           | [@Teloshav](https://github.com/Teloshav) |
-|                  |                    |                                          |
-|                  |                    |                                          |
-|                  |                    |                                          |
+| Name             | UWA Student Number | Github username                                          |
+| ---------------- | ------------------ | -------------------------------------------------------- |
+| Henuka Daluwatta | 23335255           | [@Teloshav](https://github.com/Teloshav)                 |
+| Marco Gunawan    | 23780778           | [@marcogunawan9763](https://github.com/marcogunawan9763) |
+| Austin Ngo       | 23801606           | [@mrtwiggy](https://github.com/mrtwiggy)                 |
+| Kyaw Paing Hein  | 23318983           | [@AndrewHein999](https://github.com/AndrewHein999)       |
 
 ---
 
@@ -19,9 +19,21 @@ This is the readme file for the BobaBoard website.
 
 > Addresses requirement [1](#req_1).
 
-| Table to show designs of pages at the moment |
-| -------------------------------------------- |
-|                                              |
+BobaBoard is an online hub to review bubble tea from various shops, to keep track of your personal preferences and to see what like minded bubble tea fans all over have to say about the best drink around!
+
+
+
+**BobaBoard Home Page:**
+
+<img title="" src="README_assets/f54edb8da75b6b0658c2bd0adb797f378b002d9b.png" alt="BobaBoard_home.png" width="547" data-align="center">
+
+**BobaBoard Sign In Page:**
+
+<img title="" src="README_assets/2025-05-05-12-08-03-BobaBoard_signup.png" alt="" width="555" data-align="center">
+
+**BobaBoard Recent Reviews:**
+
+<img title="" src="README_assets/2025-05-05-12-09-09-BobaBoard_recent_reviews.png" alt="" data-align="center" width="553">
 
 ---
 
@@ -29,7 +41,11 @@ This is the readme file for the BobaBoard website.
 
 > Addresses requirement [1](#req_1).
 
-a
+You make an account and start reviewing drinks you've tried at various stores! This allows us to enhance our website to be the most up to date source about what's hot and what's not!
+
+
+
+Simply pick what flavours you picked, what toppings you used and tell us what you thought about it!
 
 ---
 
