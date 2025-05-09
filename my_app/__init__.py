@@ -31,6 +31,10 @@ def create_app(config_file=None):
     # Create tables
     with app.app_context():
         db.create_all()
+        
+        # Import and call the database populator
+        from my_app.utils.db_populator import populate_database
+        populate_database()
     
     # Import and register blueprints
     from my_app.routes import register_blueprints

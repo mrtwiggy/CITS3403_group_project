@@ -1,18 +1,4 @@
 Boba Boba
-Bon Bon Cha
-Chaffic
-Chatime
-Gong Cha
-Gotcha Fresh Tea
-Mahci Machi
-Once For All
-Milk Flower
-Presotea
-T4
-Teamorrow
-Utopia
-
-Boba Boba
 [   
     "Altone Park",
     "Belmont",
@@ -79,7 +65,7 @@ Gong Cha
     "Warwick"
 ]
 
-Gotcha
+Gotcha Fresh Tea
 [
     "Booragoon",
     "Karrinyup"
