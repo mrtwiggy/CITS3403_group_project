@@ -1,24 +1,6 @@
-from flask import Flask
-from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, EmailField
 from wtforms.validators import DataRequired, Length, Email, EqualTo
-from models import db, User
-import yaml
-
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'change_this_to_something_secure'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///bobabord.db'
-db.init_app(app)
-
-login_manager = LoginManager(app)
-login_manager.login_view = 'login'
-
-from routes import *
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
 
 # WTForms
 class LoginForm(FlaskForm):
@@ -33,14 +15,3 @@ class SignupForm(FlaskForm):
     confirm_password = PasswordField('Confirm Password', 
                                      validators=[DataRequired(), EqualTo('password', message='Passwords must match')])
     submit = SubmitField('Sign Up')
-
-# Create tables before first request (Flask 2.0+ compatible method)
-with app.app_context():
-    db.create_all()
-
-# Read the YAML config
-with open('config.yml', 'r') as file:
-    config = yaml.safe_load(file)
-
-if __name__ == '__main__':
-    app.run(debug=True, port=config["server_port"])
