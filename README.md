@@ -83,31 +83,18 @@ Are you interested in using BobaBoard for your business? Below are a detailed li
    server_port: 5001
    ```
 
-5. Set the flask environment to be correct;
-   On Windows:
-   ```shell
-   set FLASK_APP=run.py
-   set FLASK_ENV=development
-
-   ```
-   On Mac/Linux
-   ```shell
-   export FLASK_APP=run.py
-   export FLASK_ENV=development
-   ```
-
-6. Launch the Flask application:
+5. Launch the Flask application:
    
    ```shell
-   flask run
+   flask --app run run
    ```
 
    or for debug:
    ```shell
-   flask run --debug
+   flask --app run run --debug
    ```
 
-7. Go to `http://localhost:<server_port>` (in this case it would be 5001 according to the `config.yml` file from step 4).
+6. Go to `http://localhost:<server_port>` (in this case it would be 5001 according to the `config.yml` file from step 4).
 
 ---
 
