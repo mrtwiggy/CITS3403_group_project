@@ -2,9 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
-
-# Initialize SQLAlchemy (the database ORM)
-db = SQLAlchemy()
+from my_app import db
 
 # User Table
 class User(UserMixin, db.Model):
@@ -16,7 +14,7 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128))  # Hashed password
     created_at = db.Column(db.DateTime, default=datetime.now)
     logged_in_at  = db.Column(db.DateTime,   nullable=True)
-    profile_pic  = db.Column(db.String(255),nullable=True, default='profilepic1.png')
+    profile_pic  = db.Column(db.String(255),nullable=True, default='pfp1.png')
 
     reviews = db.relationship('Review', back_populates='user', lazy='dynamic')
 
