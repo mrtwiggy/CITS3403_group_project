@@ -86,12 +86,12 @@ Are you interested in using BobaBoard for your business? Below are a detailed li
 5. Launch the Flask application:
    
    ```shell
-   flask --app run run
+   flask --app run
    ```
 
    or for debug:
    ```shell
-   flask --app run run --debug
+   flask --app run --debug
    ```
 
 6. Go to `http://localhost:<server_port>` (in this case it would be 5001 according to the `config.yml` file from step 4).
