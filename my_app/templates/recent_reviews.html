@@ -8,7 +8,16 @@
     
     <!-- Review Filters -->
     <div class="bg-white p-4 rounded-lg shadow-md mb-8">
-        <div class="flex flex-wrap gap-4">
+        <div class="flex flex-wrap gap-4 items-center">
+            <!-- View Toggle -->
+            <div class="flex items-center space-x-2 mr-4">
+                <span class="text-sm font-medium text-gray-700" id="public-label">Public</span>
+                <button type="button" id="view-toggle" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 bg-gray-200" role="switch" aria-checked="false">
+                    <span class="translate-x-0 pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out" id="toggle-slider"></span>
+                </button>
+                <span class="text-sm font-medium text-gray-700" id="friends-label">Friends</span>
+            </div>
+
             <!-- Search Bar -->
             <div class="w-full md:w-auto flex-grow">
                 <input type="text" 
@@ -135,15 +144,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Load More Button - Only show for authenticated users -->
-    {% if current_user.is_authenticated %}
-    <div class="text-center mt-8">
-        <button class="bg-pink-400 text-white py-2 px-6 rounded-full hover:bg-pink-500 transition duration-300">
-            Load More Reviews
-        </button>
-    </div>
-    {% endif %}
 </main>
 
 <!-- Login Prompt Modal - Only show for non-authenticated users -->
@@ -193,27 +193,22 @@
             "Carousel", "Claremont", "East Victoria Park"
         ],
         "Once For All": [
-            "Harrisdale", "Rockingham"
+            "Carousel", "Claremont", "East Victoria Park"
         ],
         "Milk Flower": [
-            "Cannington", "Joondalup", "Karrinyup", "Morley", "Northbridge"
+            "Carousel", "Claremont", "East Victoria Park"
         ],
         "Presotea": [
-            "Canning Vale", "Cannington", "Cockburn", "East Victoria Park", "Ellenbrook", 
-            "Innaloo", "Joondalup", "Leederville", "Morley", "Mount Lawley", "Myaree", 
-            "Nedlands", "Northbridge", "Perth (Barrack Street)", "Perth (Raine Square)", 
-            "Perth (Newcastle Street)", "Success"
+            "Carousel", "Claremont", "East Victoria Park"
         ],
         "T4": [
-            "Canning Vale", "East Victoria Park", "Fremantle", "Innaloo", "Morley", 
-            "Myaree", "Northbridge"
+            "Carousel", "Claremont", "East Victoria Park"
         ],
         "Teamorrow": [
-            "Booragoon", "East Victoria Park", "Morley", "Northbridge"
+            "Carousel", "Claremont", "East Victoria Park"
         ],
         "Utopia": [
-            "Cannington", "Fremantle", "Joondalup", "Morley", "Myaree", "Perth Airport", 
-            "Riverton", "Rockingham", "Victoria Park", "Wembley", "Willetton"
+            "Carousel", "Claremont", "East Victoria Park"
         ]
     };
 
@@ -265,5 +260,54 @@
             }
         }
     }
+
+    // Toggle button functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggle = document.getElementById('view-toggle');
+        const slider = document.getElementById('toggle-slider');
+        const publicLabel = document.getElementById('public-label');
+        const friendsLabel = document.getElementById('friends-label');
+        const reviewsContainer = document.getElementById('reviews-container');
+        let isFriends = false;
+
+        function updateView(newState) {
+            isFriends = newState;
+            
+            // Update toggle appearance
+            if (isFriends) {
+                toggle.classList.remove('bg-gray-200');
+                toggle.classList.add('bg-pink-400');
+                slider.classList.remove('translate-x-0');
+                slider.classList.add('translate-x-5');
+            } else {
+                toggle.classList.add('bg-gray-200');
+                toggle.classList.remove('bg-pink-400');
+                slider.classList.add('translate-x-0');
+                slider.classList.remove('translate-x-5');
+            }
+
+            // Update label colors
+            publicLabel.classList.toggle('text-gray-700', !isFriends);
+            publicLabel.classList.toggle('text-pink-500', isFriends);
+            friendsLabel.classList.toggle('text-gray-700', isFriends);
+            friendsLabel.classList.toggle('text-pink-500', !isFriends);
+
+            // Add loading state to reviews
+            reviewsContainer.classList.add('opacity-50');
+            
+            // Simulate loading (this will be replaced with actual data loading later)
+            setTimeout(() => {
+                reviewsContainer.classList.remove('opacity-50');
+                console.log('View toggled:', isFriends ? 'Friends' : 'Public');
+            }, 300);
+        }
+
+        toggle.addEventListener('click', function() {
+            updateView(!isFriends);
+        });
+
+        // Initialize the view
+        updateView(false);
+    });
 </script>
 {% endblock %} 
