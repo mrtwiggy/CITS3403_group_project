@@ -33,6 +33,11 @@ def recent_reviews():
 def explore():
     return render_template('explore.html')
 
+@main_bp.route('/create_review')
+@login_required
+def create_review():
+    return render_template('create_review.html')
+
 @main_bp.route('/reviews')
 def reviews():
     return render_template('reviews.html')

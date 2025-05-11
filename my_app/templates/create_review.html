@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}BobaBoard - Reviews{% endblock %}
+
+{% block content %}
+<main class="w-full px-4 sm:px-6 lg:px-8">
+    <!-- Upload Section -->
+    <section class="bg-white p-6 rounded-2xl shadow-md mb-6 w-full">
+      <h2 class="text-xl font-semibold mb-4">Upload Your Boba Review</h2>
+      <form class="grid gap-4">
+        <!-- Franchise Dropdown -->
+        <select id="franchise-select" class="border p-2 rounded">
+          <option value="">Select Franchise</option>
+          <option value="Boba Boba">Boba Boba</option>
+          <option value="Bon Bon Cha">Bon Bon Cha</option>
+          <option value="Chaffic">Chaffic</option>
+          <option value="Chatime">Chatime</option>
+          <option value="Gong Cha">Gong Cha</option>
+          <option value="Gotcha Fresh Tea">Gotcha Fresh Tea</option>
+          <option value="Mahci Machi">Mahci Machi</option>
+          <option value="Once For All">Once For All</option>
+          <option value="Milk Flower">Milk Flower</option>
+          <option value="Presotea">Presotea</option>
+          <option value="T4">T4</option>
+          <option value="Teamorrow">Teamorrow</option>
+          <option value="Utopia">Utopia</option>
+        </select>
+
+        <!-- Location Dropdown -->
+        <select id="location-select" class="border p-2 rounded" disabled>
+          <option value="">Select Location</option>
+        </select>
+
+        <!-- Drink Name -->
+        <input type="text" placeholder="Drink Name" class="border p-2 rounded">
+
+        <!-- Size of Drinks -->
+        <div class="grid grid-cols-3 gap-2">
+          <label class="flex items-center">
+            <input type="radio" name="size" value="S" class="mr-2"> Small
+          </label>
+          <label class="flex items-center">
+            <input type="radio" name="size" value="M" class="mr-2"> Medium
+          </label>
+          <label class="flex items-center">
+            <input type="radio" name="size" value="L" class="mr-2"> Large
+          </label>
+        </div>
+
+        <!-- sugar levels -->
+        <div>
+          <label class="block mb-2 font-medium">Sugar Level (%):</label>
+          <div class="flex gap-2">
+            <button type="button" data-group="sugar" class="bg-pink-100 hover:bg-pink-200 px-3 py-1 rounded">0%</button>
+            <button type="button" data-group="sugar" class="bg-pink-100 hover:bg-pink-200 px-3 py-1 rounded">25%</button>
+            <button type="button" data-group="sugar" class="bg-pink-100 hover:bg-pink-200 px-3 py-1 rounded">50%</button>
+            <button type="button" data-group="sugar" class="bg-pink-100 hover:bg-pink-200 px-3 py-1 rounded">75%</button>
+            <button type="button" data-group="sugar" class="bg-pink-100 hover:bg-pink-200 px-3 py-1 rounded">100%</button>
+          </div>
+        </div>
+
+        <!-- ice levels -->
+        <div>
+          <label class="block mb-2 font-medium">Ice Level (%):</label>
+          <div class="flex gap-2">
+            <button type="button" data-group="ice" class="bg-blue-100 hover:bg-blue-200 px-3 py-1 rounded">0%</button>
+            <button type="button" data-group="ice" class="bg-blue-100 hover:bg-blue-200 px-3 py-1 rounded">25%</button>
+            <button type="button" data-group="ice" class="bg-blue-100 hover:bg-blue-200 px-3 py-1 rounded">50%</button>
+            <button type="button" data-group="ice" class="bg-blue-100 hover:bg-blue-200 px-3 py-1 rounded">75%</button>
+            <button type="button" data-group="ice" class="bg-blue-100 hover:bg-blue-200 px-3 py-1 rounded">100%</button>
+          </div>
+        </div>
+
+        <!-- written review -->
+        <textarea placeholder="Your Review..." class="border p-2 rounded"></textarea>
+
+        <!-- boba rating (out of 5) -->
+        <div>
+          <label class="block font-medium mb-2">Taste Rating:</label>
+          <div id="boba-rating" class="flex gap-1 text-3xl cursor-pointer">
+            <span data-index="1">🔘</span>
+            <span data-index="2">🔘</span>
+            <span data-index="3">🔘</span>
+            <span data-index="4">🔘</span>
+            <span data-index="5">🔘</span>
+          </div>
+        </div>
+
+        <!-- submit button -->
+        <button class="bg-pink-400 text-white py-2 px-4 rounded hover:bg-pink-500">Submit</button>
+      </form>
+    </section>
+
+    <!-- Recent Reviews Feed -->
+     
+  </main>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='/css/reviews.css') }}">
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='/js/reviews.js') }}"></script>
+{% endblock %}
