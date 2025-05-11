@@ -3,82 +3,75 @@
 {% block title %}BobaBoard - Sign Up{% endblock %}
 
 {% block content %}
-<main class="flex-grow max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <section class="flex flex-col md:flex-row items-center justify-center gap-8 mb-12">
-        <!-- Mascot and welcome message -->
-        <div class="flex-shrink-0 flex flex-col items-center md:items-start">
-            <img src="../static/images/bbt_mascot_image.jpg" alt="Boba mascot" class="w-40 h-40 rounded-full mb-4 shadow-lg">
-            <h2 class="text-3xl font-bold mb-2 md:mb-0 text-center md:text-left">Welcome to BobaBoard!</h2>
-        </div>
+<div class="flex-grow max-w-md mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Signup box -->
+    <div class="w-full bg-white p-8 rounded-2xl shadow-md">
+        <h2 class="text-3xl font-bold mb-4 text-center">Welcome to BobaBoard!</h2>
+        <p class="text-xl mb-6 text-center text-gray-600">Create your account to join the boba community!</p>
         
-        <!-- Signup box -->
-        <div class="max-w-md w-full bg-white p-8 rounded-2xl shadow-md">
-            <p class="text-xl mb-4 text-center md:text-left">Create your account to join the boba community!</p>
-            
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="mb-4 p-4 rounded-lg {% if category == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="mb-4 p-4 rounded-lg {% if category == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <form method="POST" class="space-y-4">
+            {{ form.hidden_tag() }}
+            <div>
+                {{ form.username(class="w-full p-2 border rounded", placeholder="Username") }}
+                {% if form.username.errors %}
+                    <div class="text-red-500 text-sm mt-1">
+                        {% for error in form.username.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
                 {% endif %}
-            {% endwith %}
+            </div>
             
-            <form method="POST" class="space-y-4">
-                {{ form.hidden_tag() }}
-                <div>
-                    {{ form.username(class="w-full p-2 border rounded", placeholder="Username") }}
-                    {% if form.username.errors %}
-                        <div class="text-red-500 text-sm mt-1">
-                            {% for error in form.username.errors %}
-                                {{ error }}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-                
-                <div>
-                    {{ form.email(class="w-full p-2 border rounded", placeholder="Email") }}
-                    {% if form.email.errors %}
-                        <div class="text-red-500 text-sm mt-1">
-                            {% for error in form.email.errors %}
-                                {{ error }}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-                
-                <div>
-                    {{ form.password(class="w-full p-2 border rounded", placeholder="Password") }}
-                    {% if form.password.errors %}
-                        <div class="text-red-500 text-sm mt-1">
-                            {% for error in form.password.errors %}
-                                {{ error }}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-                
-                <div>
-                    {{ form.confirm_password(class="w-full p-2 border rounded", placeholder="Confirm Password") }}
-                    {% if form.confirm_password.errors %}
-                        <div class="text-red-500 text-sm mt-1">
-                            {% for error in form.confirm_password.errors %}
-                                {{ error }}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-                
-                {{ form.submit(class="w-full bg-pink-400 text-white py-2 px-4 rounded hover:bg-pink-500") }}
-            </form>
+            <div>
+                {{ form.email(class="w-full p-2 border rounded", placeholder="Email") }}
+                {% if form.email.errors %}
+                    <div class="text-red-500 text-sm mt-1">
+                        {% for error in form.email.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
             
-            <p class="mt-4 text-center text-gray-600">
-                Already have an account?
-                <a href="{{ url_for('auth.login') }}" class="text-pink-500 font-semibold hover:underline">Log in here</a>
-            </p>
-        </div>
-    </section>
-</main>
+            <div>
+                {{ form.password(class="w-full p-2 border rounded", placeholder="Password") }}
+                {% if form.password.errors %}
+                    <div class="text-red-500 text-sm mt-1">
+                        {% for error in form.password.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div>
+                {{ form.confirm_password(class="w-full p-2 border rounded", placeholder="Confirm Password") }}
+                {% if form.confirm_password.errors %}
+                    <div class="text-red-500 text-sm mt-1">
+                        {% for error in form.confirm_password.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            {{ form.submit(class="w-full bg-pink-400 text-white py-2 px-4 rounded no-underline") }}
+        </form>
+        
+        <p class="mt-4 text-center text-gray-600">
+            Already have an account?
+            <a href="{{ url_for('auth.login') }}" class="text-pink-500 font-semibold hover:underline">Log in here</a>
+        </p>
+    </div>
+</div>
 {% endblock %}
