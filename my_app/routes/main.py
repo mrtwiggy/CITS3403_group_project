@@ -1,7 +1,8 @@
 # my_app/routes/main.py
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
-from my_app import db
+from my_app.forms import ReviewForm
+from my_app import db 
 
 main_bp = Blueprint('main', __name__)
 
@@ -32,12 +33,3 @@ def recent_reviews():
 @main_bp.route('/explore')
 def explore():
     return render_template('explore.html')
-
-@main_bp.route('/create_review')
-@login_required
-def create_review():
-    return render_template('create_review.html')
-
-@main_bp.route('/reviews')
-def reviews():
-    return render_template('reviews.html')

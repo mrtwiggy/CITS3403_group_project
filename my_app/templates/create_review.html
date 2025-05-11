@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+ 
 {% block title %}BobaBoard - Reviews{% endblock %}
 
 {% block content %}
@@ -7,72 +7,69 @@
     <!-- Upload Section -->
     <section class="bg-white p-6 rounded-2xl shadow-md mb-6 w-full">
       <h2 class="text-xl font-semibold mb-4">Upload Your Boba Review</h2>
-      <form class="grid gap-4">
+      
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="mb-4 p-3 rounded {{ 'bg-green-100' if category == 'success' else 'bg-red-100' }}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+      
+      <form class="grid gap-4" method="POST" action="{{ url_for('review.create_review') }}">
+        {{ form.csrf_token }}
+        
+        <!-- Hidden fields to store button selections -->
+        {{ form.sugar_level(id="sugar-level-hidden") }}
+        {{ form.ice_level(id="ice-level-hidden") }}
+        {{ form.rating(id="rating-hidden") }}
+        
         <!-- Franchise Dropdown -->
-        <select id="franchise-select" class="border p-2 rounded">
-          <option value="">Select Franchise</option>
-          <option value="Boba Boba">Boba Boba</option>
-          <option value="Bon Bon Cha">Bon Bon Cha</option>
-          <option value="Chaffic">Chaffic</option>
-          <option value="Chatime">Chatime</option>
-          <option value="Gong Cha">Gong Cha</option>
-          <option value="Gotcha Fresh Tea">Gotcha Fresh Tea</option>
-          <option value="Mahci Machi">Mahci Machi</option>
-          <option value="Once For All">Once For All</option>
-          <option value="Milk Flower">Milk Flower</option>
-          <option value="Presotea">Presotea</option>
-          <option value="T4">T4</option>
-          <option value="Teamorrow">Teamorrow</option>
-          <option value="Utopia">Utopia</option>
-        </select>
+        {{ form.franchise_id(id="franchise-select", class="border p-2 rounded") }}
 
         <!-- Location Dropdown -->
-        <select id="location-select" class="border p-2 rounded" disabled>
-          <option value="">Select Location</option>
-        </select>
+        {{ form.location_id(id="location-select", class="border p-2 rounded") }}
 
         <!-- Drink Name -->
-        <input type="text" placeholder="Drink Name" class="border p-2 rounded">
+        {{ form.drink_name(placeholder="Drink Name", class="border p-2 rounded") }}
 
         <!-- Size of Drinks -->
         <div class="grid grid-cols-3 gap-2">
-          <label class="flex items-center">
-            <input type="radio" name="size" value="S" class="mr-2"> Small
-          </label>
-          <label class="flex items-center">
-            <input type="radio" name="size" value="M" class="mr-2"> Medium
-          </label>
-          <label class="flex items-center">
-            <input type="radio" name="size" value="L" class="mr-2"> Large
-          </label>
+          {% for subfield in form.drink_size %}
+            <label class="flex items-center">
+              {{ subfield(class="mr-2") }} {{ subfield.label.text }}
+            </label>
+          {% endfor %}
         </div>
 
         <!-- sugar levels -->
         <div>
           <label class="block mb-2 font-medium">Sugar Level (%):</label>
-          <div class="flex gap-2">
-            <button type="button" data-group="sugar" class="bg-pink-100 hover:bg-pink-200 px-3 py-1 rounded">0%</button>
-            <button type="button" data-group="sugar" class="bg-pink-100 hover:bg-pink-200 px-3 py-1 rounded">25%</button>
-            <button type="button" data-group="sugar" class="bg-pink-100 hover:bg-pink-200 px-3 py-1 rounded">50%</button>
-            <button type="button" data-group="sugar" class="bg-pink-100 hover:bg-pink-200 px-3 py-1 rounded">75%</button>
-            <button type="button" data-group="sugar" class="bg-pink-100 hover:bg-pink-200 px-3 py-1 rounded">100%</button>
+          <div class="flex gap-2 sugar-buttons">
+            <button type="button" data-group="sugar" data-value="0%" class="bg-pink-100 hover:bg-pink-200 px-3 py-1 rounded">0%</button>
+            <button type="button" data-group="sugar" data-value="25%" class="bg-pink-100 hover:bg-pink-200 px-3 py-1 rounded">25%</button>
+            <button type="button" data-group="sugar" data-value="50%" class="bg-pink-100 hover:bg-pink-200 px-3 py-1 rounded">50%</button>
+            <button type="button" data-group="sugar" data-value="75%" class="bg-pink-100 hover:bg-pink-200 px-3 py-1 rounded">75%</button>
+            <button type="button" data-group="sugar" data-value="100%" class="bg-pink-100 hover:bg-pink-200 px-3 py-1 rounded">100%</button>
           </div>
         </div>
 
         <!-- ice levels -->
         <div>
           <label class="block mb-2 font-medium">Ice Level (%):</label>
-          <div class="flex gap-2">
-            <button type="button" data-group="ice" class="bg-blue-100 hover:bg-blue-200 px-3 py-1 rounded">0%</button>
-            <button type="button" data-group="ice" class="bg-blue-100 hover:bg-blue-200 px-3 py-1 rounded">25%</button>
-            <button type="button" data-group="ice" class="bg-blue-100 hover:bg-blue-200 px-3 py-1 rounded">50%</button>
-            <button type="button" data-group="ice" class="bg-blue-100 hover:bg-blue-200 px-3 py-1 rounded">75%</button>
-            <button type="button" data-group="ice" class="bg-blue-100 hover:bg-blue-200 px-3 py-1 rounded">100%</button>
+          <div class="flex gap-2 ice-buttons">
+            <button type="button" data-group="ice" data-value="0%" class="bg-blue-100 hover:bg-blue-200 px-3 py-1 rounded">0%</button>
+            <button type="button" data-group="ice" data-value="25%" class="bg-blue-100 hover:bg-blue-200 px-3 py-1 rounded">25%</button>
+            <button type="button" data-group="ice" data-value="50%" class="bg-blue-100 hover:bg-blue-200 px-3 py-1 rounded">50%</button>
+            <button type="button" data-group="ice" data-value="75%" class="bg-blue-100 hover:bg-blue-200 px-3 py-1 rounded">75%</button>
+            <button type="button" data-group="ice" data-value="100%" class="bg-blue-100 hover:bg-blue-200 px-3 py-1 rounded">100%</button>
           </div>
         </div>
 
         <!-- written review -->
-        <textarea placeholder="Your Review..." class="border p-2 rounded"></textarea>
+        {{ form.review_content(placeholder="Your Review...", class="border p-2 rounded", rows=4) }}
 
         <!-- boba rating (out of 5) -->
         <div>
@@ -87,7 +84,7 @@
         </div>
 
         <!-- submit button -->
-        <button class="bg-pink-400 text-white py-2 px-4 rounded hover:bg-pink-500">Submit</button>
+        {{ form.submit(class="bg-pink-400 text-white py-2 px-4 rounded hover:bg-pink-500") }}
       </form>
     </section>
 
@@ -102,4 +99,117 @@
 
 {% block extra_js %}
 <script src="{{ url_for('static', filename='/js/reviews.js') }}"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const franchiseSelect = document.getElementById('franchise-select');
+    const locationSelect = document.getElementById('location-select');
+    
+    franchiseSelect.addEventListener('change', function() {
+        const franchiseId = this.value;
+        
+        // Clear current options
+        locationSelect.innerHTML = '<option value="0">Select Location</option>';
+        
+        // Don't fetch if "Select Franchise" is chosen (value 0)
+        if (franchiseId == 0) {
+            return;
+        }
+        
+        // Fetch locations for selected franchise
+        fetch(`/review/api/franchise/${franchiseId}/locations`)
+            .then(response => response.json())
+            .then(locations => {
+                // Add locations to dropdown
+                locations.forEach(location => {
+                    const option = document.createElement('option');
+                    option.value = location.id;
+                    option.textContent = location.name;
+                    locationSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching locations:', error));
+    });
+    
+    // Handle sugar level buttons
+    const sugarLevelHidden = document.getElementById('sugar-level-hidden');
+    document.querySelectorAll('.sugar-buttons button').forEach(button => {
+      button.addEventListener('click', function() {
+        // Clear active class from all buttons in group
+        document.querySelectorAll('.sugar-buttons button').forEach(btn => {
+          btn.classList.remove('bg-pink-300');
+          btn.classList.add('bg-pink-100');
+        });
+        
+        // Set active class on clicked button
+        this.classList.remove('bg-pink-100');
+        this.classList.add('bg-pink-300');
+        
+        // Update hidden field
+        sugarLevelHidden.value = this.dataset.value;
+      });
+    });
+    
+    // Handle ice level buttons
+    const iceLevelHidden = document.getElementById('ice-level-hidden');
+    document.querySelectorAll('.ice-buttons button').forEach(button => {
+      button.addEventListener('click', function() {
+        // Clear active class from all buttons in group
+        document.querySelectorAll('.ice-buttons button').forEach(btn => {
+          btn.classList.remove('bg-blue-300');
+          btn.classList.add('bg-blue-100');
+        });
+        
+        // Set active class on clicked button
+        this.classList.remove('bg-blue-100');
+        this.classList.add('bg-blue-300');
+        
+        // Update hidden field
+        iceLevelHidden.value = this.dataset.value;
+      });
+    });
+    
+    // Handle rating selection
+    const ratingHidden = document.getElementById('rating-hidden');
+    const bobaRating = document.getElementById('boba-rating');
+    const ratingSymbols = {
+      inactive: '🔘',
+      active: '🟠'
+    };
+    
+    bobaRating.querySelectorAll('span').forEach(star => {
+      star.addEventListener('click', function() {
+        const rating = parseInt(this.dataset.index);
+        ratingHidden.value = rating;
+        
+        // Update visual display
+        bobaRating.querySelectorAll('span').forEach(s => {
+          const starIndex = parseInt(s.dataset.index);
+          s.textContent = starIndex <= rating ? ratingSymbols.active : ratingSymbols.inactive;
+        });
+      });
+      
+      // Add hover effect
+      star.addEventListener('mouseover', function() {
+        const hoveredIndex = parseInt(this.dataset.index);
+        bobaRating.querySelectorAll('span').forEach(s => {
+          const starIndex = parseInt(s.dataset.index);
+          if (starIndex <= hoveredIndex) {
+            s.textContent = ratingSymbols.active;
+          } else {
+            s.textContent = ratingSymbols.inactive;
+          }
+        });
+      });
+    });
+    
+    // Reset stars on mouse out if no rating selected
+    bobaRating.addEventListener('mouseout', function() {
+      const currentRating = parseInt(ratingHidden.value) || 0;
+      bobaRating.querySelectorAll('span').forEach(s => {
+        const starIndex = parseInt(s.dataset.index);
+        s.textContent = starIndex <= currentRating ? ratingSymbols.active : ratingSymbols.inactive;
+      });
+    });
+  });
+</script>
 {% endblock %}

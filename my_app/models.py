@@ -1,4 +1,4 @@
-from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy 
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
@@ -32,15 +32,19 @@ class Review(db.Model):
     __tablename__ = 'reviews'
 
     id= db.Column(db.Integer,primary_key=True)
-    user_id= db.Column(db.Integer,db.ForeignKey('users.id', name='fk_reviews_users_id'),nullable=False)
 
+    #data from other tables
+    user_id= db.Column(db.Integer,db.ForeignKey('users.id', name='fk_reviews_users_id'),nullable=False)
     franchise_id = db.Column(db.Integer,db.ForeignKey('franchises.id', name='fk_reviews_franchises_id'),nullable=True)
     location_id = db.Column(db.Integer,db.ForeignKey('locations.id', name='fk_reviews_locations_id'), nullable=True)
     
+    #data from reviews
     drink_name = db.Column(db.Text, nullable = False)
+    drink_size = db.Column(db.String(20), nullable = False)
     review_content = db.Column(db.Text,nullable=False)
-    sugar_level = db.Column(db.String(20),nullable=True)   # e.g. “25%”, “50%”
-    ice_level = db.Column(db.String(20),nullable=True)   # e.g. “25%”, “50%”
+    
+    sugar_level = db.Column(db.String(20),nullable=False)   # e.g. “25%”, “50%”
+    ice_level = db.Column(db.String(20),nullable=False)   # e.g. “25%”, “50%”
     review_rating = db.Column(db.Integer,nullable=False)  # e.g. 1–5
     uploaded_at = db.Column(db.DateTime,nullable=False, default=datetime.now)
 

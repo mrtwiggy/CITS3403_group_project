@@ -1,4 +1,3 @@
-import json
 from pathlib import Path
 from flask import current_app
 from my_app import db
