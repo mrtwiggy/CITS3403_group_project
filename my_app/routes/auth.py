@@ -32,7 +32,7 @@ def signup():
         
         flash('Account created! Please log in.')
         return redirect(url_for('auth.login'))
-    return render_template('signup.html', form=form)
+    return render_template('signup.html', form=form, hide_nav=True)
 
 # Route for login
 @auth_bp.route('/login', methods=['GET', 'POST'])
@@ -49,7 +49,7 @@ def login():
             db.session.commit()
             return redirect(url_for('main.dashboard'))
         flash('Invalid email or password', 'error')
-    return render_template('login.html', form=form)
+    return render_template('login.html', form=form, hide_nav=True)
 
 @auth_bp.route('/logout')
 @login_required
