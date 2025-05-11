@@ -33,10 +33,13 @@
                             <span class="text-gray-600">Reviews</span>
                             <span class="font-medium">{{ current_user.reviews.all()|length }}</span>
                         </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-600">Achievements</span>
-                            <span class="font-medium">0/4</span>
-                        </div>
+                        <!-- Friends List Button -->
+                        <button onclick="openFriendsModal()" class="w-full bg-pink-100 text-pink-600 rounded-md py-2 px-4 text-sm hover:bg-pink-200 transition flex items-center justify-center space-x-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                            <span>View Friends</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -60,6 +63,65 @@
                         <div class="bg-purple-50 rounded-lg p-4">
                             <div class="text-3xl font-bold text-purple-600 mb-2">-</div>
                             <div class="text-gray-600">Favorite Shop</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notifications Section -->
+                <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold">Notifications</h2>
+                        <button onclick="markAllAsRead()" class="text-sm text-pink-600 hover:text-pink-700">
+                            Mark all as read
+                        </button>
+                    </div>
+                    
+                    <div class="space-y-4" id="notifications-container">
+                        <!-- Friend Request Notification -->
+                        <div class="flex items-start p-4 bg-pink-50 rounded-lg notification-item">
+                            <div class="flex-shrink-0 mr-4">
+                                <div class="w-10 h-10 rounded-full bg-pink-200 flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="flex-grow">
+                                <p class="text-gray-800">
+                                    <span class="font-semibold">@bobaLover</span> sent you a friend request
+                                </p>
+                                <div class="flex space-x-2 mt-2">
+                                    <button onclick="acceptFriendRequest(1)" class="bg-pink-500 text-white px-3 py-1 rounded-md text-sm hover:bg-pink-600 transition">
+                                        Accept
+                                    </button>
+                                    <button onclick="declineFriendRequest(1)" class="bg-gray-200 text-gray-700 px-3 py-1 rounded-md text-sm hover:bg-gray-300 transition">
+                                        Decline
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="flex-shrink-0 ml-4">
+                                <span class="text-sm text-gray-500">2h ago</span>
+                            </div>
+                        </div>
+
+                        <!-- Like Notification -->
+                        <div class="flex items-start p-4 bg-pink-50 rounded-lg notification-item">
+                            <div class="flex-shrink-0 mr-4">
+                                <div class="w-10 h-10 rounded-full bg-pink-200 flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="flex-grow">
+                                <p class="text-gray-800">
+                                    <span class="font-semibold">@teaEnthusiast</span> liked your review at <span class="font-semibold">Boba Paradise</span>
+                                </p>
+                                <p class="text-sm text-gray-600 mt-1">"The brown sugar boba here is absolutely amazing!"</p>
+                            </div>
+                            <div class="flex-shrink-0 ml-4">
+                                <span class="text-sm text-gray-500">5h ago</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -141,6 +203,82 @@
             </form>
         </div>
     </div>
+
+    <!-- Friends List Modal -->
+    <div id="friendsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Friends List</h3>
+                <button onclick="closeFriendsModal()" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Search Friends -->
+            <div class="relative mb-4">
+                <input type="text" 
+                       id="friend-search" 
+                       placeholder="Search friends..." 
+                       class="w-full p-2 pl-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500">
+                <svg class="w-5 h-5 text-gray-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+            </div>
+
+            <!-- Friends List -->
+            <div class="space-y-3 max-h-96 overflow-y-auto" id="friends-list">
+                <!-- Friend 1 -->
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div class="flex items-center space-x-3">
+                        <img src="{{ url_for('static', filename='profile_pics/pfp1.png') }}" alt="Friend 1" class="w-10 h-10 rounded-full">
+                        <div>
+                            <h4 class="font-medium">@bobaLover</h4>
+                            <p class="text-sm text-gray-500">12 mutual friends</p>
+                        </div>
+                    </div>
+                    <button onclick="removeFriend('bobaLover')" class="text-gray-400 hover:text-red-500 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Friend 2 -->
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div class="flex items-center space-x-3">
+                        <img src="{{ url_for('static', filename='profile_pics/pfp2.png') }}" alt="Friend 2" class="w-10 h-10 rounded-full">
+                        <div>
+                            <h4 class="font-medium">@teaEnthusiast</h4>
+                            <p class="text-sm text-gray-500">8 mutual friends</p>
+                        </div>
+                    </div>
+                    <button onclick="removeFriend('teaEnthusiast')" class="text-gray-400 hover:text-red-500 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Friend 3 -->
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div class="flex items-center space-x-3">
+                        <img src="{{ url_for('static', filename='profile_pics/pfp3.png') }}" alt="Friend 3" class="w-10 h-10 rounded-full">
+                        <div>
+                            <h4 class="font-medium">@bubbleTeaMaster</h4>
+                            <p class="text-sm text-gray-500">15 mutual friends</p>
+                        </div>
+                    </div>
+                    <button onclick="removeFriend('bubbleTeaMaster')" class="text-gray-400 hover:text-red-500 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block extra_js %}
@@ -174,5 +312,73 @@
             closeAvatarModal();
         }
     });
+
+    // Notification functions
+    function markAllAsRead() {
+        document.querySelectorAll('.notification-item').forEach(item => {
+            item.classList.remove('bg-pink-50');
+            item.classList.add('bg-gray-50');
+        });
+    }
+
+    function acceptFriendRequest(requestId) {
+        // TODO: Implement friend request acceptance
+        console.log('Accepting friend request:', requestId);
+        // Remove the notification after accepting
+        const notification = event.target.closest('.notification-item');
+        notification.remove();
+    }
+
+    function declineFriendRequest(requestId) {
+        // TODO: Implement friend request decline
+        console.log('Declining friend request:', requestId);
+        // Remove the notification after declining
+        const notification = event.target.closest('.notification-item');
+        notification.remove();
+    }
+
+    // Friends Modal Functions
+    function openFriendsModal() {
+        document.getElementById('friendsModal').classList.remove('hidden');
+        document.getElementById('friendsModal').classList.add('flex');
+    }
+
+    function closeFriendsModal() {
+        document.getElementById('friendsModal').classList.add('hidden');
+        document.getElementById('friendsModal').classList.remove('flex');
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('friendsModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeFriendsModal();
+        }
+    });
+
+    // Friend search functionality
+    document.getElementById('friend-search').addEventListener('input', function(e) {
+        const searchText = e.target.value.toLowerCase();
+        const friends = document.querySelectorAll('#friends-list > div');
+        
+        friends.forEach(friend => {
+            const username = friend.querySelector('h4').textContent.toLowerCase();
+            if (username.includes(searchText)) {
+                friend.style.display = '';
+            } else {
+                friend.style.display = 'none';
+            }
+        });
+    });
+
+    // Friend removal functionality
+    function removeFriend(username) {
+        if (confirm(`Are you sure you want to remove @${username} from your friends?`)) {
+            // TODO: Implement friend removal in backend
+            console.log('Removing friend:', username);
+            // Remove the friend entry from the list
+            const friendEntry = event.target.closest('.flex.items-center.justify-between');
+            friendEntry.remove();
+        }
+    }
 </script>
 {% endblock %} 
