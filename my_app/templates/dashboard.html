@@ -3,88 +3,97 @@
 {% block title %}Dashboard - BobaBoard{% endblock %}
 
 {% block content %}
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <!-- Profile Section -->
-        <div class="md:col-span-1">
-            <div class="bg-white rounded-xl shadow-md p-6">
-                <div class="text-center mb-6">
-                    <!-- Profile Picture Display -->
-                    <div class="w-24 h-24 rounded-full mx-auto mb-4 overflow-hidden">
-                        <img src="{{ url_for('static', filename='profile_pics/' + current_user.profile_pic) }}" 
-                            alt="Profile Picture" 
-                            class="w-full h-full object-cover">
-                    </div>
-                    
-                    <!-- Profile Picture Selection -->
-                    <form action="{{ url_for('main.update_profile_pic') }}" method="post" class="mb-4">
-                        <div class="flex items-center justify-center">
-                            <select name="profile_pic" class="rounded-l-md border border-gray-300 py-1 px-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500">
-                                <option value="pfp1.png">Avatar 1</option>
-                                <option value="pfp2.png">Avatar 2</option>
-                                <option value="pfp3.png">Avatar 3</option>
-                                <option value="pfp4.png">Avatar 4</option>
-                                <option value="pfp5.png">Avatar 5</option>
-                                <option value="pfp6.png">Avatar 6</option>
-                                <option value="pfp7.png">Avatar 7</option>
-                                <option value="pfp8.png">Avatar 8</option>
-                                <option value="pfp9.png">Avatar 9</option>
-                            </select>
-                            <button type="submit" class="bg-pink-500 text-white rounded-r-md py-1 px-3 text-sm hover:bg-pink-600 transition">
-                                Update
-                            </button>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Profile Section -->
+            <div class="lg:col-span-4">
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="text-center mb-6">
+                        <!-- Profile Picture Display -->
+                        <div class="w-32 h-32 rounded-full mx-auto mb-4 overflow-hidden">
+                            <img src="{{ url_for('static', filename='profile_pics/' + current_user.profile_pic) }}" 
+                                alt="Profile Picture" 
+                                class="w-full h-full object-cover">
                         </div>
-                    </form>
-                    
-                    <h2 class="text-2xl font-bold">{{ current_user.username }}</h2>
-                    <p class="text-gray-600">{{ current_user.email }}</p>
-                </div>
-                <div class="space-y-4">
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-600">Member since</span>
-                        <span class="font-medium">{{ current_user.created_at.strftime('%B %Y') }}</span>
+                        
+                        <!-- Change Avatar Button -->
+                        <button onclick="openAvatarModal()" class="bg-pink-500 text-white rounded-md py-1 px-3 text-sm hover:bg-pink-600 transition mb-4">
+                            Change Avatar
+                        </button>
+                        
+                        <h2 class="text-2xl font-bold">{{ current_user.username }}</h2>
+                        <p class="text-gray-600">{{ current_user.email }}</p>
                     </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-600">Reviews</span>
-                        <span class="font-medium">{{ current_user.reviews.all()|length }}</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-600">Achievements</span>
-                        <span class="font-medium">0/4</span>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Member since</span>
+                            <span class="font-medium">{{ current_user.created_at.strftime('%B %Y') }}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Reviews</span>
+                            <span class="font-medium">{{ current_user.reviews.all()|length }}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Achievements</span>
+                            <span class="font-medium">0/4</span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Recent Activity Section -->
-        <div class="md:col-span-2">
-            <div class="bg-white rounded-xl shadow-md p-6">
-                <h2 class="text-2xl font-bold mb-6">Recent Activity</h2>
-                
-                {% if current_user.reviews %}
-                    <div class="space-y-6">
-                        {% for review in current_user.reviews[:5] %}
-                            <div class="border-b border-gray-200 pb-6 last:border-0 last:pb-0">
-                                <div class="flex items-center justify-between mb-2">
-                                    <h3 class="text-lg font-semibold">{{ review.shop.name }}</h3>
-                                    <div class="text-yellow-400">
-                                        {% for i in range(review.rating) %}⭐{% endfor %}
+            <!-- User Stats Section -->
+            <div class="lg:col-span-8">
+                <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+                    <h2 class="text-2xl font-bold mb-6">User Stats</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Total Reviews -->
+                        <div class="bg-pink-50 rounded-lg p-4">
+                            <div class="text-3xl font-bold text-pink-600 mb-2">{{ current_user.reviews.all()|length }}</div>
+                            <div class="text-gray-600">Total Reviews</div>
+                        </div>
+                        <!-- Average Rating -->
+                        <div class="bg-blue-50 rounded-lg p-4">
+                            <div class="text-3xl font-bold text-blue-600 mb-2">4.5</div>
+                            <div class="text-gray-600">Average Rating</div>
+                        </div>
+                        <!-- Favorite Shop -->
+                        <div class="bg-purple-50 rounded-lg p-4">
+                            <div class="text-3xl font-bold text-purple-600 mb-2">-</div>
+                            <div class="text-gray-600">Favorite Shop</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity Section -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h2 class="text-2xl font-bold mb-6">Recent Activity</h2>
+                    
+                    {% if current_user.reviews %}
+                        <div class="space-y-6">
+                            {% for review in current_user.reviews[:5] %}
+                                <div class="border-b border-gray-200 pb-6 last:border-0 last:pb-0">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <h3 class="text-lg font-semibold">{{ review.shop.name }}</h3>
+                                        <div class="text-yellow-400">
+                                            {% for i in range(review.rating) %}⭐{% endfor %}
+                                        </div>
+                                    </div>
+                                    <p class="text-gray-600 mb-2">{{ review.content }}</p>
+                                    <div class="text-sm text-gray-500">
+                                        {{ review.created_at.strftime('%B %d, %Y') }}
                                     </div>
                                 </div>
-                                <p class="text-gray-600 mb-2">{{ review.content }}</p>
-                                <div class="text-sm text-gray-500">
-                                    {{ review.created_at.strftime('%B %d, %Y') }}
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <div class="text-center py-8">
-                        <p class="text-gray-600">No reviews yet. Start exploring boba shops!</p>
-                        <a href="{{ url_for('main.recent_reviews') }}" class="mt-4 inline-block bg-pink-400 text-white py-2 px-4 rounded-full hover:bg-pink-500 transition duration-300">
-                            Find Shops
-                        </a>
-                    </div>
-                {% endif %}
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-8">
+                            <p class="text-gray-600">No reviews yet. Start exploring boba shops!</p>
+                            <a href="{{ url_for('main.recent_reviews') }}" class="mt-4 inline-block bg-pink-400 text-white py-2 px-4 rounded-full hover:bg-pink-500 transition duration-300">
+                                Find Shops
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
@@ -95,4 +104,75 @@
             Logout
         </a>
     </div>
+
+    <!-- Avatar Selection Modal -->
+    <div id="avatarModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Choose Your Avatar</h3>
+                <button onclick="closeAvatarModal()" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Avatar Grid -->
+            <div class="grid grid-cols-3 gap-4 mb-6">
+                {% for i in range(1, 10) %}
+                    <div class="avatar-option cursor-pointer rounded-lg p-2 hover:bg-pink-50 transition-colors" 
+                         onclick="selectAvatar('pfp{{ i }}.png')">
+                        <img src="{{ url_for('static', filename='profile_pics/pfp' + i|string + '.png') }}" 
+                             alt="Avatar {{ i }}" 
+                             class="w-full h-auto rounded-lg">
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Save Button -->
+            <form id="avatarForm" action="{{ url_for('main.update_profile_pic') }}" method="post" class="text-right">
+                <input type="hidden" name="profile_pic" id="selectedAvatar" value="">
+                <button type="button" onclick="closeAvatarModal()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded mr-2 hover:bg-gray-300 transition">
+                    Cancel
+                </button>
+                <button type="submit" class="bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-600 transition">
+                    Save Changes
+                </button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function openAvatarModal() {
+        document.getElementById('avatarModal').classList.remove('hidden');
+        document.getElementById('avatarModal').classList.add('flex');
+    }
+
+    function closeAvatarModal() {
+        document.getElementById('avatarModal').classList.add('hidden');
+        document.getElementById('avatarModal').classList.remove('flex');
+    }
+
+    function selectAvatar(avatarPath) {
+        // Remove selection from all avatars
+        document.querySelectorAll('.avatar-option').forEach(option => {
+            option.classList.remove('ring-2', 'ring-pink-500');
+        });
+        
+        // Add selection to clicked avatar
+        event.currentTarget.classList.add('ring-2', 'ring-pink-500');
+        
+        // Update hidden input
+        document.getElementById('selectedAvatar').value = avatarPath;
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('avatarModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeAvatarModal();
+        }
+    });
+</script>
 {% endblock %} 
