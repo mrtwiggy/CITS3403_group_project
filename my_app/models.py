@@ -32,23 +32,20 @@ class Review(db.Model):
     __tablename__ = 'reviews'
 
     id= db.Column(db.Integer,primary_key=True)
-    user_id= db.Column(db.Integer,db.ForeignKey('users.id'),nullable=False)
+    user_id= db.Column(db.Integer,db.ForeignKey('users.id', name='fk_reviews_users_id'),nullable=False)
+
+    franchise_id = db.Column(db.Integer,db.ForeignKey('franchises.id', name='fk_reviews_franchises_id'),nullable=True)
+    location_id = db.Column(db.Integer,db.ForeignKey('locations.id', name='fk_reviews_locations_id'), nullable=True)
     
-    # If you’ve already got Franchises, Drinks and Locations tables,
-    # link to them with real FKs; otherwise store names as plain strings:
-    drink_id = db.Column(db.Integer,db.ForeignKey('drinks.id'),   nullable=True)
-    franchise_id = db.Column(db.Integer,db.ForeignKey('franchises.id'),nullable=True)
-    location_id = db.Column(db.Integer,db.ForeignKey('locations.id'), nullable=True)
-    
+    drink_name = db.Column(db.Text, nullable = False)
     review_content = db.Column(db.Text,nullable=False)
-    sugar_level = db.Column(db.String(20),nullable=True)   # e.g. “25%”, “Half”
-    ice_level = db.Column(db.String(20),nullable=True)   # e.g. “No ice”, “Light ice”
+    sugar_level = db.Column(db.String(20),nullable=True)   # e.g. “25%”, “50%”
+    ice_level = db.Column(db.String(20),nullable=True)   # e.g. “25%”, “50%”
     review_rating = db.Column(db.Integer,nullable=False)  # e.g. 1–5
     uploaded_at = db.Column(db.DateTime,nullable=False, default=datetime.now)
 
     # relationships
     user = db.relationship('User',back_populates='reviews')
-    drink = db.relationship('Drink',backref='reviews',  lazy='joined')
     franchise = db.relationship('Franchise', backref='reviews',  lazy='joined')
     location = db.relationship('Location',  backref='reviews',  lazy='joined')
 
@@ -76,16 +73,19 @@ class Drink(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    locations = db.relationship('Location', secondary='location_drink', backref='drinks')
+    locations = db.relationship('Franchise', secondary='franchise_drink', backref='drinks')
 
-# Junction table for Drinks and Locations (many-to-many)
-class LocationDrink(db.Model):
-    drink_id = db.Column(db.Integer, db.ForeignKey('drinks.id'), primary_key=True)
-    location_id = db.Column(db.Integer, db.ForeignKey('locations.id'), primary_key=True)
+# Junction table for Franchises and Drinks (many-to-many)
+class FranchiseDrink(db.Model):
+    __tablename__ = 'franchise_drink'
+
+    drink_id = db.Column(db.Integer, db.ForeignKey('drinks.id', name='fk_franchisedrinks_drink_id'), primary_key=True)
+    franchise_id = db.Column(db.Integer, db.ForeignKey('franchises.id', name='fk_franchisedrinks_franchises_id'), primary_key=True)
+
 
 # Junction table for Franchises and Locations (many-to-many)
 class FranchiseLocation(db.Model):
     __tablename__ = 'franchise_location'
     
-    franchise_id = db.Column(db.Integer, db.ForeignKey('franchises.id'), primary_key=True)
-    location_id = db.Column(db.Integer, db.ForeignKey('locations.id'), primary_key=True)
+    franchise_id = db.Column(db.Integer, db.ForeignKey('franchises.id', name='fk_franchiselocations_franchise_id'), primary_key=True)
+    location_id = db.Column(db.Integer, db.ForeignKey('locations.id', name='fk_franchiselocations_locations_id'), primary_key=True)

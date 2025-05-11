@@ -4,6 +4,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 from my_app import db
 from my_app.models import User  # Import from my_app.models, not just models
 from my_app.forms import LoginForm, SignupForm
+from datetime import datetime
 
 # Create a blueprint
 auth_bp = Blueprint('auth', __name__)
@@ -44,6 +45,8 @@ def login():
         user = User.query.filter_by(email=form.email.data).first()
         if user and user.check_password(form.password.data):
             login_user(user)
+            current_user.logged_in_at = datetime.now()
+            db.session.commit()
             return redirect(url_for('main.dashboard'))
         flash('Invalid email or password', 'error')
     return render_template('login.html', form=form)
