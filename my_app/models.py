@@ -85,5 +85,7 @@ class LocationDrink(db.Model):
 
 # Junction table for Franchises and Locations (many-to-many)
 class FranchiseLocation(db.Model):
+    __tablename__ = 'franchise_location'
+    
     franchise_id = db.Column(db.Integer, db.ForeignKey('franchises.id'), primary_key=True)
     location_id = db.Column(db.Integer, db.ForeignKey('locations.id'), primary_key=True)

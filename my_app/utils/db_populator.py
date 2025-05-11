@@ -46,86 +46,107 @@ def populate_database():
                 if current_franchise:
                     franchise_locations[current_franchise].append(location)
         
-        # Start database transaction
-        with db.session.begin():
-            # Get existing franchises and locations
-            existing_franchises = {f.name: f for f in Franchise.query.all()}
-            existing_locations = {l.name: l for l in Location.query.all()}
+        # STEP 1: Process franchises and locations
+        # Use session.add() without transaction blocks for adding
+        
+        # Get existing franchises and locations
+        existing_franchises = {f.name: f for f in Franchise.query.all()}
+        existing_locations = {l.name: l for l in Location.query.all()}
+        
+        # Update or create franchises
+        for franchise_name in franchise_names:
+            if franchise_name not in existing_franchises:
+                franchise = Franchise(name=franchise_name)
+                db.session.add(franchise)
+                current_app.logger.debug(f"Added new franchise: {franchise_name}")
+        
+        # Create any new locations
+        all_locations = set()
+        for locations in franchise_locations.values():
+            all_locations.update(locations)
             
-            # Update or create franchises
-            for franchise_name in franchise_names:
-                if franchise_name in existing_franchises:
-                    current_app.logger.debug(f"Franchise already exists: {franchise_name}")
-                else:
-                    franchise = Franchise(name=franchise_name)
-                    db.session.add(franchise)
-                    current_app.logger.debug(f"Added new franchise: {franchise_name}")
+        for location_name in all_locations:
+            if location_name not in existing_locations:
+                location = Location(name=location_name)
+                db.session.add(location)
+                current_app.logger.debug(f"Added new location: {location_name}")
+        
+        # Commit changes to ensure all franchises and locations have IDs
+        db.session.commit()
+        
+        # STEP 2: Refresh our data from the database
+        existing_franchises = {f.name: f for f in Franchise.query.all()}
+        existing_locations = {l.name: l for l in Location.query.all()}
+        
+        # STEP 3: Process franchise-location relationships
+        # Get all current relationships for faster comparison
+        existing_relationships = {}
+        for fl in FranchiseLocation.query.all():
+            franchise = Franchise.query.get(fl.franchise_id)
+            location = Location.query.get(fl.location_id)
+            if franchise and location:
+                if franchise.name not in existing_relationships:
+                    existing_relationships[franchise.name] = set()
+                existing_relationships[franchise.name].add(location.name)
+        
+        # Add new relationships
+        for franchise_name, locations in franchise_locations.items():
+            franchise = existing_franchises.get(franchise_name)
+            if not franchise:
+                current_app.logger.debug(f"Warning: Franchise not found in database: {franchise_name}")
+                continue
             
-            # Update or create locations and franchise-location relationships
-            for franchise_name, locations in franchise_locations.items():
-                franchise = Franchise.query.filter_by(name=franchise_name).first()
-                if not franchise:
-                    current_app.logger.debug(f"Warning: Franchise not found in database: {franchise_name}")
+            franchise_relations = existing_relationships.get(franchise_name, set())
+            
+            for location_name in locations:
+                location = existing_locations.get(location_name)
+                if not location:
+                    current_app.logger.debug(f"Warning: Location not found in database: {location_name}")
                     continue
                 
-                # Get existing locations for this franchise
-                existing_franchise_locations = {
-                    fl.location.name for fl in 
-                    FranchiseLocation.query.filter_by(franchise_id=franchise.id).all()
-                }
-                
-                # Add new locations and relationships
-                for location_name in locations:
-                    # Create location if it doesn't exist
-                    if location_name not in existing_locations:
-                        location = Location(name=location_name)
-                        db.session.add(location)
-                        existing_locations[location_name] = location
-                        current_app.logger.debug(f"Added new location: {location_name}")
-                    
-                    location = existing_locations[location_name]
-                    
-                    # Create franchise-location relationship if it doesn't exist
-                    if location_name not in existing_franchise_locations:
-                        franchise_location = FranchiseLocation(
-                            franchise_id=franchise.id,
-                            location_id=location.id
-                        )
-                        db.session.add(franchise_location)
-                        current_app.logger.debug(
-                            f"Added relationship: {franchise_name} - {location_name}"
-                        )
+                # Only create if relationship doesn't exist
+                if location_name not in franchise_relations:
+                    franchise_location = FranchiseLocation(
+                        franchise_id=franchise.id,
+                        location_id=location.id
+                    )
+                    db.session.add(franchise_location)
+                    current_app.logger.debug(f"Added relationship: {franchise_name} - {location_name}")
+        
+        # Remove relationships that no longer exist
+        for fl in FranchiseLocation.query.all():
+            franchise = Franchise.query.get(fl.franchise_id)
+            location = Location.query.get(fl.location_id)
             
-            # Remove franchise-location relationships that no longer exist
-            for franchise in Franchise.query.all():
-                if franchise.name in franchise_locations:
-                    current_locations = set(franchise_locations[franchise.name])
-                    existing_relationships = FranchiseLocation.query.filter_by(
-                        franchise_id=franchise.id
-                    ).all()
-                    
-                    for relationship in existing_relationships:
-                        location = Location.query.get(relationship.location_id)
-                        if location.name not in current_locations:
-                            db.session.delete(relationship)
-                            current_app.logger.debug(
-                                f"Removed relationship: {franchise.name} - {location.name}"
-                            )
-            
-            # Remove locations that are no longer associated with any franchise
-            for location in Location.query.all():
-                if not FranchiseLocation.query.filter_by(location_id=location.id).first():
-                    db.session.delete(location)
-                    current_app.logger.debug(f"Removed unused location: {location.name}")
-            
-            # Remove franchises that no longer exist in the text file
-            for franchise in Franchise.query.all():
-                if franchise.name not in franchise_names:
-                    db.session.delete(franchise)
-                    current_app.logger.debug(f"Removed franchise: {franchise.name}")
+            if franchise and location:
+                if (franchise.name in franchise_locations and 
+                    location.name not in franchise_locations[franchise.name]):
+                    db.session.delete(fl)
+                    current_app.logger.debug(f"Removed relationship: {franchise.name} - {location.name}")
+        
+        # Commit all relationship changes
+        db.session.commit()
+        
+        # STEP 4: Clean up unused entities
+        # Remove locations that are no longer associated with any franchise
+        for location in Location.query.all():
+            if not FranchiseLocation.query.filter_by(location_id=location.id).first():
+                db.session.delete(location)
+                current_app.logger.debug(f"Removed unused location: {location.name}")
+        
+        # Remove franchises that no longer exist in the text file
+        for franchise in Franchise.query.all():
+            if franchise.name not in franchise_names:
+                db.session.delete(franchise)
+                current_app.logger.debug(f"Removed franchise: {franchise.name}")
+        
+        # Final commit
+        db.session.commit()
         
         current_app.logger.debug("Database population completed successfully")
         
     except Exception as e:
+        # Rollback any pending transactions in case of error
+        db.session.rollback()
         current_app.logger.error(f"Error populating database: {str(e)}")
         raise
