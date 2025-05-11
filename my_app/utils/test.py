@@ -35,7 +35,8 @@ def populate_database():
             if current_franchise:
                 franchise_locations[current_franchise].append(location)
     
-    print(franchise_locations)
-    print(current_franchise)
+    for i, j in franchise_locations.items():
+        print (i)
 
 populate_database()
+
