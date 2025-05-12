@@ -140,7 +140,7 @@
                                             {% for i in range((review.review_rating|int)) %}🟤{% endfor %}
                                         </div>
                                     </div>
-                                    <p class="text-gray-600 mb-2">{{ review.content }}</p>
+                                    <p class="text-gray-600 mb-2">{{ review.review_content }}</p>
                                     <div class="text-sm text-gray-500">
                                         {{ review.uploaded_at.strftime('%B %d, %Y') }}
                                     </div>

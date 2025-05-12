@@ -36,5 +36,7 @@ class ReviewForm(FlaskForm):
     review_content = TextAreaField('Your Review', validators=[DataRequired(), Length(min=5, max=500)])
     
     rating = HiddenField('Rating', validators=[DataRequired()])
+
+    is_private = HiddenField('Private', default='0')
     
     submit = SubmitField('Submit')

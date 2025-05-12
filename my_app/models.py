@@ -1,4 +1,4 @@
-from flask_sqlalchemy import SQLAlchemy 
+from flask_sqlalchemy import SQLAlchemy  
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
@@ -47,6 +47,9 @@ class Review(db.Model):
     ice_level = db.Column(db.String(20),nullable=False)   # e.g. “25%”, “50%”
     review_rating = db.Column(db.Integer,nullable=False)  # e.g. 1–5
     uploaded_at = db.Column(db.DateTime,nullable=False, default=datetime.now)
+
+    #private/public
+    is_private = db.Column(db.Boolean, default=False)
 
     # relationships
     user = db.relationship('User',back_populates='reviews')
