@@ -56,12 +56,12 @@
                         </div>
                         <!-- Average Rating -->
                         <div class="bg-blue-50 rounded-lg p-4">
-                            <div class="text-3xl font-bold text-blue-600 mb-2">4.5</div>
+                            <div class="text-3xl font-bold text-blue-600 mb-2">{{ "%.1f"|format(avg_rating) }}</div>
                             <div class="text-gray-600">Average Rating</div>
                         </div>
                         <!-- Favorite Shop -->
                         <div class="bg-purple-50 rounded-lg p-4">
-                            <div class="text-3xl font-bold text-purple-600 mb-2">-</div>
+                            <div class="text-3xl font-bold text-purple-600 mb-2">{{ most_visited_franchise.name }}</div>
                             <div class="text-gray-600">Favorite Shop</div>
                         </div>
                     </div>
