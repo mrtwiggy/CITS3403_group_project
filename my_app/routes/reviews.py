@@ -79,7 +79,8 @@ def create_review():
             sugar_level=form.sugar_level.data,
             ice_level=form.ice_level.data,
             review_rating=form.rating.data,  # Note: changed from rating to review_rating to match model
-            uploaded_at=datetime.now()  # Add timestamp
+            uploaded_at=datetime.now(),   # Add timestamp
+            is_private=bool(int(form.is_private.data))
         )
         
         db.session.add(new_review)

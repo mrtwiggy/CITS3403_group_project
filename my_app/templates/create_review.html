@@ -83,6 +83,17 @@
           </div>
         </div>
 
+        <!-- private/public review selector -->
+        {{ form.is_private(id="privacy-hidden") }}
+        <div>
+          <label class="block font-medium mb-2">Review Privacy:</label>
+          <div class="flex gap-2 privacy-buttons">
+            <button type="button" data-privacy="0" class="privacy-btn bg-green-100 hover:bg-green-200 px-3 py-1 rounded">Public</button>
+            <button type="button" data-privacy="1" class="privacy-btn bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded">Private</button>
+          </div>
+          <p class="text-sm text-gray-500 mt-1">Public reviews will be visible to all users. Private reviews are only visible to you and your friends.</p>
+        </div>
+
         <!-- submit button -->
         {{ form.submit(class="bg-pink-400 text-white py-2 px-4 rounded hover:bg-pink-500") }}
       </form>
@@ -175,6 +186,59 @@
       inactive: '🔘',
       active: '🟤'
     };
+
+    // Handle privacy toggle buttons
+    const privacyHidden = document.getElementById('privacy-hidden');
+    const privacyButtons = document.querySelectorAll('.privacy-buttons button');
+    
+    // Set default to Public (0) if not already set
+    if (!privacyHidden.value) {
+      privacyHidden.value = '0';
+      privacyButtons[0].classList.remove('bg-green-100');
+      privacyButtons[0].classList.add('bg-green-300');
+    }
+    
+    // Add click handler to each button
+    privacyButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        // Remove active classes from all buttons
+        privacyButtons.forEach(btn => {
+          if (btn.dataset.privacy === '0') {
+            btn.classList.remove('bg-green-300');
+            btn.classList.add('bg-green-100');
+          } else {
+            btn.classList.remove('bg-gray-300');
+            btn.classList.add('bg-gray-100');
+          }
+        });
+        
+        // Add active class to clicked button
+        if (this.dataset.privacy === '0') {
+          this.classList.remove('bg-green-100');
+          this.classList.add('bg-green-300');
+        } else {
+          this.classList.remove('bg-gray-100');
+          this.classList.add('bg-gray-300');
+        }
+        
+        // Update hidden field
+        privacyHidden.value = this.dataset.privacy;
+        console.log(`Privacy set to: ${this.dataset.privacy === '0' ? 'Public' : 'Private'}`);
+      });
+    });
+    
+    // Set initial state based on the hidden value (useful when editing a review)
+    const initialPrivacyValue = privacyHidden.value || '0';
+    const activeButton = document.querySelector(`.privacy-buttons button[data-privacy="${initialPrivacyValue}"]`);
+    if (activeButton) {
+      if (initialPrivacyValue === '0') {
+        activeButton.classList.remove('bg-green-100');
+        activeButton.classList.add('bg-green-300');
+      } else {
+        activeButton.classList.remove('bg-gray-100');
+        activeButton.classList.add('bg-gray-300');
+      }
+    }
     
     bobaRating.querySelectorAll('span').forEach(star => {
       star.addEventListener('click', function() {
