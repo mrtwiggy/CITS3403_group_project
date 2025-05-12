@@ -2,6 +2,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 from my_app.forms import ReviewForm
+from my_app.models import Franchise
 from my_app import db 
 
 main_bp = Blueprint('main', __name__)
@@ -15,7 +16,9 @@ def index():
 @main_bp.route('/dashboard')
 @login_required
 def dashboard():
-    return render_template('dashboard.html')
+    all_franchises = Franchise.query.all()
+    franchises = {franchise.id: franchise.name for franchise in all_franchises}
+    return render_template('dashboard.html', franchises = franchises)
 
 @main_bp.route('/update_profile_pic', methods=['POST'])
 @login_required

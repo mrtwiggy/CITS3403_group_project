@@ -2,7 +2,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
 from my_app import db
-from my_app.models import User  # Import from my_app.models, not just models
+from my_app.models import User, Franchise  # Import from my_app.models, not just models
 from my_app.forms import LoginForm, SignupForm
 from datetime import datetime
 
@@ -36,7 +36,7 @@ def signup():
 
 # Route for login
 @auth_bp.route('/login', methods=['GET', 'POST'])
-def login():
+def login():      
     if current_user.is_authenticated:
         return redirect(url_for('main.dashboard'))
         

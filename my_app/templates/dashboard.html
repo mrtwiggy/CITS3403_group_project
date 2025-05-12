@@ -135,14 +135,14 @@
                             {% for review in current_user.reviews[:5] %}
                                 <div class="border-b border-gray-200 pb-6 last:border-0 last:pb-0">
                                     <div class="flex items-center justify-between mb-2">
-                                        <h3 class="text-lg font-semibold">{{ review.shop.name }}</h3>
+                                        <h3 class="text-lg font-semibold">{{franchises[review.franchise_id]}}</h3>
                                         <div class="text-yellow-400">
-                                            {% for i in range(review.rating) %}⭐{% endfor %}
+                                            {% for i in range((review.review_rating|int)) %}⭐{% endfor %}
                                         </div>
                                     </div>
                                     <p class="text-gray-600 mb-2">{{ review.content }}</p>
                                     <div class="text-sm text-gray-500">
-                                        {{ review.created_at.strftime('%B %d, %Y') }}
+                                        {{ review.uploaded_at.strftime('%B %d, %Y') }}
                                     </div>
                                 </div>
                             {% endfor %}
