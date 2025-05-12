@@ -56,12 +56,12 @@
                         </div>
                         <!-- Average Rating -->
                         <div class="bg-blue-50 rounded-lg p-4">
-                            <div class="text-3xl font-bold text-blue-600 mb-2">4.5</div>
+                            <div class="text-3xl font-bold text-blue-600 mb-2">{{ "%.1f"|format(avg_rating) }}</div>
                             <div class="text-gray-600">Average Rating</div>
                         </div>
                         <!-- Favorite Shop -->
                         <div class="bg-purple-50 rounded-lg p-4">
-                            <div class="text-3xl font-bold text-purple-600 mb-2">-</div>
+                            <div class="text-3xl font-bold text-purple-600 mb-2">{{ most_visited_franchise.name }}</div>
                             <div class="text-gray-600">Favorite Shop</div>
                         </div>
                     </div>
@@ -135,14 +135,14 @@
                             {% for review in current_user.reviews[:5] %}
                                 <div class="border-b border-gray-200 pb-6 last:border-0 last:pb-0">
                                     <div class="flex items-center justify-between mb-2">
-                                        <h3 class="text-lg font-semibold">{{ review.shop.name }}</h3>
+                                        <h3 class="text-lg font-semibold">{{franchises[review.franchise_id]}}</h3>
                                         <div class="text-yellow-400">
-                                            {% for i in range(review.rating) %}⭐{% endfor %}
+                                            {% for i in range((review.review_rating|int)) %}🟤{% endfor %}
                                         </div>
                                     </div>
                                     <p class="text-gray-600 mb-2">{{ review.content }}</p>
                                     <div class="text-sm text-gray-500">
-                                        {{ review.created_at.strftime('%B %d, %Y') }}
+                                        {{ review.uploaded_at.strftime('%B %d, %Y') }}
                                     </div>
                                 </div>
                             {% endfor %}
