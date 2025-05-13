@@ -44,7 +44,40 @@
             </div>
             
             <div>
-                {{ form.password(class="w-full p-2 border rounded", placeholder="Password") }}
+                {{ form.password(class="w-full p-2 border rounded", placeholder="Password", id="password") }}
+                <!-- Password Requirements -->
+                <div class="mt-2 text-sm space-y-1">
+                    <div id="length-check" class="flex items-center text-gray-500">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                        At least 6 characters
+                    </div>
+                    <div id="uppercase-check" class="flex items-center text-gray-500">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                        One uppercase letter
+                    </div>
+                    <div id="lowercase-check" class="flex items-center text-gray-500">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                        One lowercase letter
+                    </div>
+                    <div id="number-check" class="flex items-center text-gray-500">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                        One number
+                    </div>
+                    <div id="special-check" class="flex items-center text-gray-500">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                        One special character
+                    </div>
+                </div>
                 {% if form.password.errors %}
                     <div class="text-red-500 text-sm mt-1">
                         {% for error in form.password.errors %}
@@ -55,7 +88,13 @@
             </div>
             
             <div>
-                {{ form.confirm_password(class="w-full p-2 border rounded", placeholder="Confirm Password") }}
+                {{ form.confirm_password(class="w-full p-2 border rounded", placeholder="Confirm Password", id="confirm-password") }}
+                <div id="password-match" class="mt-2 text-sm flex items-center text-gray-500">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                    Passwords match
+                </div>
                 {% if form.confirm_password.errors %}
                     <div class="text-red-500 text-sm mt-1">
                         {% for error in form.confirm_password.errors %}
@@ -65,7 +104,7 @@
                 {% endif %}
             </div>
             
-            {{ form.submit(class="w-full bg-pink-400 text-white py-2 px-4 rounded no-underline") }}
+            {{ form.submit(class="w-full bg-pink-400 text-white py-2 px-4 rounded no-underline", id="submit-btn", disabled=true) }}
         </form>
         
         <p class="mt-4 text-center text-gray-600">
@@ -74,4 +113,79 @@
         </p>
     </div>
 </div>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirm-password');
+        const submitButton = document.getElementById('submit-btn');
+
+        const lengthCheck = document.getElementById('length-check');
+        const uppercaseCheck = document.getElementById('uppercase-check');
+        const lowercaseCheck = document.getElementById('lowercase-check');
+        const numberCheck = document.getElementById('number-check');
+        const specialCheck = document.getElementById('special-check');
+        const passwordMatch = document.getElementById('password-match');
+
+        function updateRequirement(element, isValid) {
+            const icon = element.querySelector('svg');
+            if (isValid) {
+                element.classList.remove('text-gray-500');
+                element.classList.add('text-green-500');
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>';
+            } else {
+                element.classList.remove('text-green-500');
+                element.classList.add('text-gray-500');
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>';
+            }
+        }
+
+        function validatePassword() {
+            const password = passwordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+
+            // Check length
+            updateRequirement(lengthCheck, password.length >= 6);
+
+            // Check uppercase
+            updateRequirement(uppercaseCheck, /[A-Z]/.test(password));
+
+            // Check lowercase
+            updateRequirement(lowercaseCheck, /[a-z]/.test(password));
+
+            // Check number
+            updateRequirement(numberCheck, /[0-9]/.test(password));
+
+            // Check special character
+            updateRequirement(specialCheck, /[!@#$%^&*(),.?":{}|<>]/.test(password));
+
+            // Check if passwords match
+            updateRequirement(passwordMatch, password === confirmPassword && password !== '');
+
+            // Enable submit button if all requirements are met
+            const allRequirementsMet = 
+                password.length >= 6 &&
+                /[A-Z]/.test(password) &&
+                /[a-z]/.test(password) &&
+                /[0-9]/.test(password) &&
+                /[!@#$%^&*(),.?":{}|<>]/.test(password) &&
+                password === confirmPassword &&
+                password !== '';
+
+            submitButton.disabled = !allRequirementsMet;
+            if (allRequirementsMet) {
+                submitButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                submitButton.classList.add('hover:bg-pink-500');
+            } else {
+                submitButton.classList.add('opacity-50', 'cursor-not-allowed');
+                submitButton.classList.remove('hover:bg-pink-500');
+            }
+        }
+
+        passwordInput.addEventListener('input', validatePassword);
+        confirmPasswordInput.addEventListener('input', validatePassword);
+    });
+</script>
+{% endblock %}
 {% endblock %}

@@ -63,26 +63,14 @@
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 class="text-3xl font-bold text-center mb-12">Trending Boba Drinks</h2>
             <div class="grid md:grid-cols-4 gap-6">
+                {% for drink in trending_drinks %}
                 <div class="bg-white p-6 rounded-xl shadow-md text-center">
                     <div class="text-4xl mb-4">🧋</div>
-                    <h3 class="text-lg font-semibold mb-2">Classic Milk Tea</h3>
-                    <p class="text-gray-600">The perfect blend of tea and creamy goodness</p>
+                    <h3 class="text-lg font-semibold mb-2">{{ drink.drink_name }}</h3>
+                    <p class="text-gray-600">{{ drink.franchise_name }}</p>
+                    <p class="text-sm text-pink-500 mt-2">{{ drink.review_count }} reviews</p>
                 </div>
-                <div class="bg-white p-6 rounded-xl shadow-md text-center">
-                    <div class="text-4xl mb-4">🍵</div>
-                    <h3 class="text-lg font-semibold mb-2">Matcha Latte</h3>
-                    <p class="text-gray-600">Rich green tea with a smooth finish</p>
-                </div>
-                <div class="bg-white p-6 rounded-xl shadow-md text-center">
-                    <div class="text-4xl mb-4">🥭</div>
-                    <h3 class="text-lg font-semibold mb-2">Mango Green Tea</h3>
-                    <p class="text-gray-600">Refreshing fruit tea with popping boba</p>
-                </div>
-                <div class="bg-white p-6 rounded-xl shadow-md text-center">
-                    <div class="text-4xl mb-4">🍯</div>
-                    <h3 class="text-lg font-semibold mb-2">Brown Sugar Fresh Milk</h3>
-                    <p class="text-gray-600">Creamy milk with caramelized brown sugar</p>
-                </div>
+                {% endfor %}
             </div>
         </div>
     </section>
@@ -92,36 +80,23 @@
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 class="text-3xl font-bold text-center mb-12">Latest Community Reviews</h2>
             <div class="grid md:grid-cols-3 gap-8">
+                {% for review in latest_reviews %}
                 <div class="bg-white p-6 rounded-xl shadow-md">
-                    <div class="flex items-center mb-4">
-                        <div class="text-4xl mr-4">🧋</div>
-                        <div>
-                            <h3 class="font-semibold">Chatime</h3>
-                            <p class="text-gray-600">Perth CBD</p>
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-start flex-1 mr-4">
+                            <div class="text-4xl mr-4">🧋</div>
+                            <div>
+                                <h3 class="font-semibold">{{ review.drink_name }}</h3>
+                                <p class="text-gray-600">{{ review.franchise.name }}</p>
+                            </div>
+                        </div>
+                        <div class="text-yellow-400 flex-shrink-0 whitespace-nowrap">
+                            {% for i in range(review.review_rating) %}🟤{% endfor %}
                         </div>
                     </div>
-                    <p class="text-gray-600">Explore our community's latest reviews and discover new boba spots in your area.</p>
+                    <p class="text-gray-600 line-clamp-3">{{ review.review_content }}</p>
                 </div>
-                <div class="bg-white p-6 rounded-xl shadow-md">
-                    <div class="flex items-center mb-4">
-                        <div class="text-4xl mr-4">🧋</div>
-                        <div>
-                            <h3 class="font-semibold">ShareTea</h3>
-                            <p class="text-gray-600">Northbridge</p>
-                        </div>
-                    </div>
-                    <p class="text-gray-600">Find detailed ratings and reviews from fellow boba enthusiasts.</p>
-                </div>
-                <div class="bg-white p-6 rounded-xl shadow-md">
-                    <div class="flex items-center mb-4">
-                        <div class="text-4xl mr-4">🧋</div>
-                        <div>
-                            <h3 class="font-semibold">Gong Cha</h3>
-                            <p class="text-gray-600">Carousel</p>
-                        </div>
-                    </div>
-                    <p class="text-gray-600">Join our community and start sharing your own boba experiences.</p>
-                </div>
+                {% endfor %}
             </div>
         </div>
     </section>

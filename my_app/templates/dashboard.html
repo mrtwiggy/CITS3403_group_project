@@ -48,7 +48,7 @@
             <div class="lg:col-span-8">
                 <div class="bg-white rounded-xl shadow-md p-6 mb-8">
                     <h2 class="text-2xl font-bold mb-6">User Stats</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                         <!-- Total Reviews -->
                         <div class="bg-pink-50 rounded-lg p-4">
                             <div class="text-3xl font-bold text-pink-600 mb-2">{{ current_user.reviews.all()|length }}</div>
@@ -65,6 +65,20 @@
                             <div class="text-gray-600">Favorite Shop</div>
                         </div>
                     </div>
+
+                    <!-- Charts Section -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Weekly Activity Chart -->
+                        <div class="bg-white rounded-lg p-4 border">
+                            <h3 class="text-lg font-semibold mb-4">Weekly Activity</h3>
+                            <canvas id="weeklyActivityChart"></canvas>
+                        </div>
+                        <!-- Franchise Distribution Chart -->
+                        <div class="bg-white rounded-lg p-4 border">
+                            <h3 class="text-lg font-semibold mb-4">Favorite Franchises</h3>
+                            <canvas id="franchiseDistributionChart"></canvas>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Notifications Section -->
@@ -77,52 +91,41 @@
                     </div>
                     
                     <div class="space-y-4" id="notifications-container">
-                        <!-- Friend Request Notification -->
-                        <div class="flex items-start p-4 bg-pink-50 rounded-lg notification-item">
-                            <div class="flex-shrink-0 mr-4">
-                                <div class="w-10 h-10 rounded-full bg-pink-200 flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
-                                    </svg>
+                        {% if friend_requests %}
+                            {% for request in friend_requests %}
+                                <div class="flex items-start p-4 bg-pink-50 rounded-lg notification-item">
+                                    <div class="flex-shrink-0 mr-4">
+                                        <div class="w-10 h-10 rounded-full bg-pink-200 flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow">
+                                        <p class="text-gray-800">
+                                            <span class="font-semibold">@{{ request.sender.username }}</span> sent you a friend request
+                                        </p>
+                                        <div class="flex space-x-2 mt-2">
+                                            <button onclick="handleFriendAction({{ request.sender.id }}, 'accept', this)" 
+                                                    class="bg-pink-500 text-white px-3 py-1 rounded-md text-sm hover:bg-pink-600 transition">
+                                                Accept
+                                            </button>
+                                            <button onclick="handleFriendAction({{ request.sender.id }}, 'decline', this)" 
+                                                    class="bg-gray-200 text-gray-700 px-3 py-1 rounded-md text-sm hover:bg-gray-300 transition">
+                                                Decline
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="flex-shrink-0 ml-4">
+                                        <span class="text-sm text-gray-500">{{ request.created_at.strftime('%B %d, %Y') }}</span>
+                                    </div>
                                 </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center py-6 text-gray-500">
+                                No new notifications
                             </div>
-                            <div class="flex-grow">
-                                <p class="text-gray-800">
-                                    <span class="font-semibold">@bobaLover</span> sent you a friend request
-                                </p>
-                                <div class="flex space-x-2 mt-2">
-                                    <button onclick="acceptFriendRequest(1)" class="bg-pink-500 text-white px-3 py-1 rounded-md text-sm hover:bg-pink-600 transition">
-                                        Accept
-                                    </button>
-                                    <button onclick="declineFriendRequest(1)" class="bg-gray-200 text-gray-700 px-3 py-1 rounded-md text-sm hover:bg-gray-300 transition">
-                                        Decline
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="flex-shrink-0 ml-4">
-                                <span class="text-sm text-gray-500">2h ago</span>
-                            </div>
-                        </div>
-
-                        <!-- Like Notification -->
-                        <div class="flex items-start p-4 bg-pink-50 rounded-lg notification-item">
-                            <div class="flex-shrink-0 mr-4">
-                                <div class="w-10 h-10 rounded-full bg-pink-200 flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="flex-grow">
-                                <p class="text-gray-800">
-                                    <span class="font-semibold">@teaEnthusiast</span> liked your review at <span class="font-semibold">Boba Paradise</span>
-                                </p>
-                                <p class="text-sm text-gray-600 mt-1">"The brown sugar boba here is absolutely amazing!"</p>
-                            </div>
-                            <div class="flex-shrink-0 ml-4">
-                                <span class="text-sm text-gray-500">5h ago</span>
-                            </div>
-                        </div>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -135,8 +138,11 @@
                             {% for review in current_user.reviews[:5] %}
                                 <div class="border-b border-gray-200 pb-6 last:border-0 last:pb-0">
                                     <div class="flex items-center justify-between mb-2">
-                                        <h3 class="text-lg font-semibold">{{franchises[review.franchise_id]}}</h3>
-                                        <div class="text-yellow-400">
+                                        <div>
+                                            <h3 class="text-lg font-semibold">{{review.drink_name}}</h3>
+                                            <p class="text-sm text-gray-600">{{franchises[review.franchise_id]}}{% if review.location %} • {{review.location.name}}{% endif %}</p>
+                                        </div>
+                                        <div class="text-3xl">
                                             {% for i in range((review.review_rating|int)) %}🟤{% endfor %}
                                         </div>
                                     </div>
@@ -229,59 +235,38 @@
 
             <!-- Friends List -->
             <div class="space-y-3 max-h-96 overflow-y-auto" id="friends-list">
-                <!-- Friend 1 -->
-                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div class="flex items-center space-x-3">
-                        <img src="{{ url_for('static', filename='profile_pics/pfp1.png') }}" alt="Friend 1" class="w-10 h-10 rounded-full">
-                        <div>
-                            <h4 class="font-medium">@bobaLover</h4>
-                            <p class="text-sm text-gray-500">12 mutual friends</p>
+                {% if friends %}
+                    {% for friend in friends %}
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <img src="{{ url_for('static', filename='profile_pics/' + friend.profile_pic) }}" 
+                                     alt="{{ friend.username }}" 
+                                     class="w-10 h-10 rounded-full">
+                                <div>
+                                    <h4 class="font-medium">@{{ friend.username }}</h4>
+                                    <p class="text-sm text-gray-500">{{ friend.reviews|length }} reviews</p>
+                                </div>
+                            </div>
+                            <button onclick="handleFriendAction({{ friend.id }}, 'remove', this)" 
+                                    class="text-gray-400 hover:text-red-500 transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </button>
                         </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-4 text-gray-500">
+                        No friends yet. Start exploring to find friends!
                     </div>
-                    <button onclick="removeFriend('bobaLover')" class="text-gray-400 hover:text-red-500 transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                        </svg>
-                    </button>
-                </div>
-
-                <!-- Friend 2 -->
-                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div class="flex items-center space-x-3">
-                        <img src="{{ url_for('static', filename='profile_pics/pfp2.png') }}" alt="Friend 2" class="w-10 h-10 rounded-full">
-                        <div>
-                            <h4 class="font-medium">@teaEnthusiast</h4>
-                            <p class="text-sm text-gray-500">8 mutual friends</p>
-                        </div>
-                    </div>
-                    <button onclick="removeFriend('teaEnthusiast')" class="text-gray-400 hover:text-red-500 transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                        </svg>
-                    </button>
-                </div>
-
-                <!-- Friend 3 -->
-                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div class="flex items-center space-x-3">
-                        <img src="{{ url_for('static', filename='profile_pics/pfp3.png') }}" alt="Friend 3" class="w-10 h-10 rounded-full">
-                        <div>
-                            <h4 class="font-medium">@bubbleTeaMaster</h4>
-                            <p class="text-sm text-gray-500">15 mutual friends</p>
-                        </div>
-                    </div>
-                    <button onclick="removeFriend('bubbleTeaMaster')" class="text-gray-400 hover:text-red-500 transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                        </svg>
-                    </button>
-                </div>
+                {% endif %}
             </div>
         </div>
     </div>
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     function openAvatarModal() {
         document.getElementById('avatarModal').classList.remove('hidden');
@@ -321,20 +306,45 @@
         });
     }
 
-    function acceptFriendRequest(requestId) {
-        // TODO: Implement friend request acceptance
-        console.log('Accepting friend request:', requestId);
-        // Remove the notification after accepting
-        const notification = event.target.closest('.notification-item');
-        notification.remove();
+    async function handleFriendAction(userId, action, button) {
+        try {
+            const response = await fetch(`/friends/${action}/${userId}`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            if (!response.ok) throw new Error('Failed to process friend action');
+
+            const data = await response.json();
+            
+            // Remove the notification or friend item
+            const item = button.closest('.notification-item, .flex.items-center.justify-between');
+            if (item) {
+                item.remove();
+            }
+
+            // Show success message
+            showNotification(data.message || 'Friend action processed successfully', 'success');
+        } catch (error) {
+            console.error('Error processing friend action:', error);
+            showNotification('Failed to process friend action', 'error');
+        }
     }
 
-    function declineFriendRequest(requestId) {
-        // TODO: Implement friend request decline
-        console.log('Declining friend request:', requestId);
-        // Remove the notification after declining
-        const notification = event.target.closest('.notification-item');
-        notification.remove();
+    function showNotification(message, type) {
+        const notification = document.createElement('div');
+        notification.className = `fixed bottom-4 right-4 px-6 py-3 rounded-lg text-white ${
+            type === 'success' ? 'bg-green-500' : 'bg-red-500'
+        } transition-opacity duration-300`;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.classList.add('opacity-0');
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
     }
 
     // Friends Modal Functions
@@ -355,14 +365,14 @@
         }
     });
 
-    // Friend search functionality
+    // Friends search functionality
     document.getElementById('friend-search').addEventListener('input', function(e) {
         const searchText = e.target.value.toLowerCase();
         const friends = document.querySelectorAll('#friends-list > div');
         
         friends.forEach(friend => {
-            const username = friend.querySelector('h4').textContent.toLowerCase();
-            if (username.includes(searchText)) {
+            const username = friend.querySelector('h4')?.textContent.toLowerCase();
+            if (username && username.includes(searchText)) {
                 friend.style.display = '';
             } else {
                 friend.style.display = 'none';
@@ -380,5 +390,79 @@
             friendEntry.remove();
         }
     }
+
+    // Chart initialization
+    document.addEventListener('DOMContentLoaded', function() {
+        // Weekly Activity Chart
+        const weeklyActivityCtx = document.getElementById('weeklyActivityChart').getContext('2d');
+        const weeklyActivityChart = new Chart(weeklyActivityCtx, {
+            type: 'bar',
+            data: {
+                labels: {{ weekly_labels|tojson }},
+                datasets: [{
+                    label: 'Boba Reviews',
+                    data: {{ weekly_data|tojson }},
+                    backgroundColor: 'rgba(219, 39, 119, 0.5)',
+                    borderColor: 'rgb(219, 39, 119)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        // Franchise Distribution Chart
+        const franchiseDistributionCtx = document.getElementById('franchiseDistributionChart').getContext('2d');
+        const franchiseDistributionChart = new Chart(franchiseDistributionCtx, {
+            type: 'pie',
+            data: {
+                labels: {{ franchise_labels|tojson }},
+                datasets: [{
+                    data: {{ franchise_data|tojson }},
+                    backgroundColor: [
+                        'rgba(219, 39, 119, 0.5)',
+                        'rgba(59, 130, 246, 0.5)',
+                        'rgba(139, 92, 246, 0.5)',
+                        'rgba(16, 185, 129, 0.5)',
+                        'rgba(245, 158, 11, 0.5)',
+                        'rgba(239, 68, 68, 0.5)',
+                        'rgba(107, 114, 128, 0.5)'
+                    ],
+                    borderColor: [
+                        'rgb(219, 39, 119)',
+                        'rgb(59, 130, 246)',
+                        'rgb(139, 92, 246)',
+                        'rgb(16, 185, 129)',
+                        'rgb(245, 158, 11)',
+                        'rgb(239, 68, 68)',
+                        'rgb(107, 114, 128)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    });
 </script>
 {% endblock %} 
