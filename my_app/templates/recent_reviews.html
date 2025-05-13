@@ -9,24 +9,20 @@
     <!-- Review Filters -->
     <div class="bg-white p-4 rounded-lg shadow-md mb-8">
         <div class="flex flex-wrap gap-4 items-center">
-            <!-- View Toggle -->
-            <div class="flex items-center space-x-2 mr-4">
-                <span class="text-sm font-medium text-gray-700" id="public-label">Public</span>
-                <button type="button" id="view-toggle" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 bg-gray-200" role="switch" aria-checked="false">
-                    <span class="translate-x-0 pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out" id="toggle-slider"></span>
-                </button>
-                <span class="text-sm font-medium text-gray-700" id="friends-label">Friends</span>
-            </div>
+            <!-- View Dropdown -->
+            <select id="view-select" class="p-2 border rounded focus:ring-2 focus:ring-pink-500 focus:border-pink-500">
+                <option value="public">🌍 Public Reviews</option>
+                <option value="friends">👥 Friends' Reviews</option>
+            </select>
 
             <!-- Search Bar -->
             <div class="w-full md:w-auto flex-grow">
                 <input type="text" 
                        id="review-search" 
                        placeholder="Search reviews..." 
-                       class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-pink-500"
-                       onkeyup="filterReviews()">
+                       class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-pink-500">
             </div>
-            <select id="franchise-select" class="p-2 border rounded" onchange="updateLocations()">
+            <select id="franchise-select" class="p-2 border rounded">
                 <option value="">All Franchises</option>
                 <option value="Boba Boba">Boba Boba</option>
                 <option value="Bon Bon Cha">Bon Bon Cha</option>
@@ -45,13 +41,13 @@
             <select id="location-select" class="p-2 border rounded" disabled>
                 <option value="">Select Location</option>
             </select>
-            <select class="p-2 border rounded">
+            <select id="rating-select" class="p-2 border rounded">
                 <option value="">All Ratings</option>
-                <option value="5">5 Stars</option>
-                <option value="4">4+ Stars</option>
-                <option value="3">3+ Stars</option>
+                <option value="5">5 Boba Balls</option>
+                <option value="4">4+ Boba Balls</option>
+                <option value="3">3+ Boba Balls</option>
             </select>
-            <select class="p-2 border rounded">
+            <select id="sort-select" class="p-2 border rounded">
                 <option value="recent">Most Recent</option>
                 <option value="rating">Highest Rated</option>
             </select>
@@ -60,254 +56,149 @@
 
     <!-- Reviews List -->
     <div class="space-y-6" id="reviews-container">
-        <!-- Review 1 -->
-        <div class="bg-white p-6 rounded-lg shadow-md review-card">
-            <div class="flex justify-between items-start mb-4">
-                <div>
-                    <h3 class="text-xl font-semibold">Boba Paradise</h3>
-                    <p class="text-gray-600">123 Bubble Street, Perth</p>
-                </div>
-                <div class="text-yellow-400">⭐⭐⭐⭐⭐</div>
-            </div>
-            <p class="text-gray-700 mb-4">"The brown sugar boba here is absolutely amazing! Perfect texture and sweetness. The staff is super friendly and the atmosphere is great for studying."</p>
-            <div class="flex justify-between items-center text-sm text-gray-500">
-                <span>Posted by Sarah K. • 2 hours ago</span>
-                <div class="flex items-center space-x-4">
-                    {% if current_user.is_authenticated %}
-                        <button class="flex items-center space-x-1 hover:text-pink-500">
-                            <span>👍</span>
-                            <span>24</span>
-                        </button>
-                    {% else %}
-                        <button class="flex items-center space-x-1 hover:text-pink-500" onclick="showLoginPrompt()">
-                            <span>👍</span>
-                            <span>24</span>
-                        </button>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-
-        <!-- Review 2 -->
-        <div class="bg-white p-6 rounded-lg shadow-md review-card">
-            <div class="flex justify-between items-start mb-4">
-                <div>
-                    <h3 class="text-xl font-semibold">Tea Time</h3>
-                    <p class="text-gray-600">456 Tea Avenue, Perth</p>
-                </div>
-                <div class="text-yellow-400">⭐⭐⭐⭐</div>
-            </div>
-            <p class="text-gray-700 mb-4">"Tried their new taro milk tea with boba. The flavor was rich and creamy, though the boba could have been a bit softer. Great value for money!"</p>
-            <div class="flex justify-between items-center text-sm text-gray-500">
-                <span>Posted by Mike T. • 5 hours ago</span>
-                <div class="flex items-center space-x-4">
-                    {% if current_user.is_authenticated %}
-                        <button class="flex items-center space-x-1 hover:text-pink-500">
-                            <span>👍</span>
-                            <span>15</span>
-                        </button>
-                    {% else %}
-                        <button class="flex items-center space-x-1 hover:text-pink-500" onclick="showLoginPrompt()">
-                            <span>👍</span>
-                            <span>15</span>
-                        </button>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-
-        <!-- Review 3 -->
-        <div class="bg-white p-6 rounded-lg shadow-md review-card">
-            <div class="flex justify-between items-start mb-4">
-                <div>
-                    <h3 class="text-xl font-semibold">Bubble World</h3>
-                    <p class="text-gray-600">789 Pearl Road, Perth</p>
-                </div>
-                <div class="text-yellow-400">⭐⭐⭐⭐⭐</div>
-            </div>
-            <p class="text-gray-700 mb-4">"Their fruit tea selection is incredible! The passion fruit green tea with boba is my new favorite. The boba is perfectly chewy and the tea is refreshing."</p>
-            <div class="flex justify-between items-center text-sm text-gray-500">
-                <span>Posted by Emma L. • 1 day ago</span>
-                <div class="flex items-center space-x-4">
-                    {% if current_user.is_authenticated %}
-                        <button class="flex items-center space-x-1 hover:text-pink-500">
-                            <span>👍</span>
-                            <span>32</span>
-                        </button>
-                    {% else %}
-                        <button class="flex items-center space-x-1 hover:text-pink-500" onclick="showLoginPrompt()">
-                            <span>👍</span>
-                            <span>32</span>
-                        </button>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
+        <!-- Reviews will be populated by JavaScript -->
+        <div class="text-center py-8 text-gray-500">Loading reviews...</div>
     </div>
 </main>
-
-<!-- Login Prompt Modal - Only show for non-authenticated users -->
-{% if not current_user.is_authenticated %}
-<div id="loginPrompt" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
-    <div class="bg-white p-8 rounded-lg max-w-md w-full mx-4">
-        <h2 class="text-2xl font-bold mb-4">Sign In Required</h2>
-        <p class="text-gray-600 mb-6">Please sign in to view more reviews and interact with the community.</p>
-        <div class="flex justify-end space-x-4">
-            <button onclick="hideLoginPrompt()" class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancel</button>
-            <a href="{{ url_for('auth.login') }}" class="bg-pink-400 text-white px-4 py-2 rounded hover:bg-pink-500">Sign In</a>
-        </div>
-    </div>
-</div>
-{% endif %}
-
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    // Store locations data
-    const locations = {
-        "Boba Boba": [
-            "Altone Park", "Belmont", "Cockburn", "Kingsway", "Morley", "Murdoch", 
-            "Myaree", "Nedlands", "Northbridge", "Piara Waters", "Victoria Park", 
-            "Willeton", "Joondalup - Bobabot"
-        ],
-        "Bon Bon Cha": [
-            "Forrest Lakes", "Harrisdale", "Willeton"
-        ],
-        "Chaffic": [
-            "Baldivis", "Belmont", "Claremont", "Forrest Chase", "Karrinyup", 
-            "Midland", "Mirrabooka", "Northbridge", "Victoria Park", "Willetton"
-        ],
-        "Chatime": [
-            "Armadale", "Cannington", "East Victoria Park", "Ellenbrook", "Forrestfield", 
-            "Hillarys", "Joondalup", "Karawara", "Karrinyup", "Lakelands", "Leederville", 
-            "Mandurah", "Midland", "Murdoch", "Southern River", "Waterford Plaza", "Willetton"
-        ],
-        "Gong Cha": [
-            "Cannington", "Innaloo", "Northbridge", "Warwick"
-        ],
-        "Gotcha Fresh Tea": [
-            "Booragoon", "Karrinyup"
-        ],
-        "Mahci Machi": [
-            "Carousel", "Claremont", "East Victoria Park"
-        ],
-        "Once For All": [
-            "Carousel", "Claremont", "East Victoria Park"
-        ],
-        "Milk Flower": [
-            "Carousel", "Claremont", "East Victoria Park"
-        ],
-        "Presotea": [
-            "Carousel", "Claremont", "East Victoria Park"
-        ],
-        "T4": [
-            "Carousel", "Claremont", "East Victoria Park"
-        ],
-        "Teamorrow": [
-            "Carousel", "Claremont", "East Victoria Park"
-        ],
-        "Utopia": [
-            "Carousel", "Claremont", "East Victoria Park"
-        ]
-    };
-
-    function updateLocations() {
+    document.addEventListener('DOMContentLoaded', function() {
+        const viewSelect = document.getElementById('view-select');
+        const reviewsContainer = document.getElementById('reviews-container');
+        const searchInput = document.getElementById('review-search');
         const franchiseSelect = document.getElementById('franchise-select');
         const locationSelect = document.getElementById('location-select');
-        const selectedFranchise = franchiseSelect.value;
+        const ratingSelect = document.getElementById('rating-select');
+        const sortSelect = document.getElementById('sort-select');
+        
+        let allReviews = [];
+        let filteredReviews = [];
 
-        // Clear current options
-        locationSelect.innerHTML = '<option value="">Select Location</option>';
-
-        if (selectedFranchise && locations[selectedFranchise]) {
-            // Enable location select
-            locationSelect.disabled = false;
-
-            // Add new options
-            locations[selectedFranchise].forEach(location => {
-                const option = document.createElement('option');
-                option.value = location;
-                option.textContent = location;
-                locationSelect.appendChild(option);
+        // Function to format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diff = now - date;
+            
+            // Less than 1 hour
+            if (diff < 3600000) {
+                const minutes = Math.floor(diff / 60000);
+                return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
+            }
+            // Less than 1 day
+            if (diff < 86400000) {
+                const hours = Math.floor(diff / 3600000);
+                return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
+            }
+            // Less than 7 days
+            if (diff < 604800000) {
+                const days = Math.floor(diff / 86400000);
+                return `${days} day${days !== 1 ? 's' : ''} ago`;
+            }
+            // Otherwise show full date
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
             });
-        } else {
-            // Disable location select if no franchise selected
-            locationSelect.disabled = true;
         }
-    }
 
-    function showLoginPrompt() {
-        document.getElementById('loginPrompt').classList.remove('hidden');
-    }
+        // Function to render boba rating
+        function renderRating(rating) {
+            return '🟤'.repeat(rating);
+        }
 
-    function hideLoginPrompt() {
-        document.getElementById('loginPrompt').classList.add('hidden');
-    }
+        // Function to render a single review
+        function renderReview(review) {
+            return `
+                <div class="bg-white p-6 rounded-lg shadow-md review-card ${review.is_private ? 'border-l-4 border-pink-400' : ''}" data-franchise="${review.franchise.name}" data-rating="${review.rating}">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex items-center space-x-3">
+                            <img src="{{ url_for('static', filename='profile_pics/') }}${review.user.profile_pic}"
+                                 alt="${review.user.username}"
+                                 class="w-10 h-10 rounded-full">
+                            <div>
+                                <h3 class="text-xl font-semibold flex items-center">
+                                    ${review.drink_name}
+                                    ${review.is_private ? '<span class="ml-2 text-sm text-pink-600">👥 Friends Only</span>' : ''}
+                                </h3>
+                                <p class="text-gray-600">${review.franchise.name} • ${review.location.name}</p>
+                            </div>
+                        </div>
+                        <div class="text-3xl">${renderRating(review.rating)}</div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="text-gray-700">${review.review_content}</div>
+                        <div class="mt-2 text-sm text-gray-500">
+                            ${review.drink_size} • 
+                            Sugar: ${review.sugar_level} • 
+                            Ice: ${review.ice_level}
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center text-sm text-gray-500">
+                        <span>Posted by ${review.user.username} • ${formatDate(review.uploaded_at)}</span>
+                    </div>
+                </div>
+            `;
+        }
 
-    // Search functionality
-    function filterReviews() {
-        const searchInput = document.getElementById('review-search');
-        const searchText = searchInput.value.toLowerCase();
-        const reviewCards = document.getElementsByClassName('review-card');
-
-        for (let card of reviewCards) {
-            const reviewText = card.textContent.toLowerCase();
-            if (reviewText.includes(searchText)) {
-                card.style.display = '';
+        // Function to apply filters
+        function applyFilters() {
+            const searchText = searchInput.value.toLowerCase();
+            const selectedFranchise = franchiseSelect.value;
+            const selectedRating = parseInt(ratingSelect.value) || 0;
+            const sortBy = sortSelect.value;
+            
+            filteredReviews = allReviews.filter(review => {
+                const matchesSearch = review.review_content.toLowerCase().includes(searchText) ||
+                                    review.drink_name.toLowerCase().includes(searchText) ||
+                                    review.user.username.toLowerCase().includes(searchText);
+                const matchesFranchise = !selectedFranchise || review.franchise.name === selectedFranchise;
+                const matchesRating = !selectedRating || review.rating >= selectedRating;
+                
+                return matchesSearch && matchesFranchise && matchesRating;
+            });
+            
+            // Sort reviews
+            if (sortBy === 'rating') {
+                filteredReviews.sort((a, b) => b.rating - a.rating);
             } else {
-                card.style.display = 'none';
+                filteredReviews.sort((a, b) => new Date(b.uploaded_at) - new Date(a.uploaded_at));
+            }
+            
+            // Render filtered reviews
+            reviewsContainer.innerHTML = filteredReviews.length > 0
+                ? filteredReviews.map(renderReview).join('')
+                : '<div class="text-center py-8 text-gray-500">No reviews found matching your filters.</div>';
+        }
+
+        // Function to load reviews
+        async function loadReviews() {
+            reviewsContainer.innerHTML = '<div class="text-center py-8 text-gray-500">Loading reviews...</div>';
+            
+            try {
+                const response = await fetch(`/api/get_reviews?view=${viewSelect.value}`);
+                if (!response.ok) throw new Error('Failed to load reviews');
+                
+                allReviews = await response.json();
+                applyFilters();
+            } catch (error) {
+                console.error('Error loading reviews:', error);
+                reviewsContainer.innerHTML = '<div class="text-center py-8 text-red-500">Failed to load reviews. Please try again.</div>';
             }
         }
-    }
 
-    // Toggle button functionality
-    document.addEventListener('DOMContentLoaded', function() {
-        const toggle = document.getElementById('view-toggle');
-        const slider = document.getElementById('toggle-slider');
-        const publicLabel = document.getElementById('public-label');
-        const friendsLabel = document.getElementById('friends-label');
-        const reviewsContainer = document.getElementById('reviews-container');
-        let isFriends = false;
-
-        function updateView(newState) {
-            isFriends = newState;
-            
-            // Update toggle appearance
-            if (isFriends) {
-                toggle.classList.remove('bg-gray-200');
-                toggle.classList.add('bg-pink-400');
-                slider.classList.remove('translate-x-0');
-                slider.classList.add('translate-x-5');
-            } else {
-                toggle.classList.add('bg-gray-200');
-                toggle.classList.remove('bg-pink-400');
-                slider.classList.add('translate-x-0');
-                slider.classList.remove('translate-x-5');
-            }
-
-            // Update label colors
-            publicLabel.classList.toggle('text-gray-700', !isFriends);
-            publicLabel.classList.toggle('text-pink-500', isFriends);
-            friendsLabel.classList.toggle('text-gray-700', isFriends);
-            friendsLabel.classList.toggle('text-pink-500', !isFriends);
-
-            // Add loading state to reviews
-            reviewsContainer.classList.add('opacity-50');
-            
-            // Simulate loading (this will be replaced with actual data loading later)
-            setTimeout(() => {
-                reviewsContainer.classList.remove('opacity-50');
-                console.log('View toggled:', isFriends ? 'Friends' : 'Public');
-            }, 300);
-        }
-
-        toggle.addEventListener('click', function() {
-            updateView(!isFriends);
-        });
+        // Event listeners
+        viewSelect.addEventListener('change', loadReviews);
+        searchInput.addEventListener('input', applyFilters);
+        franchiseSelect.addEventListener('change', applyFilters);
+        ratingSelect.addEventListener('change', applyFilters);
+        sortSelect.addEventListener('change', applyFilters);
 
         // Initialize the view
-        updateView(false);
+        loadReviews();
     });
 </script>
 {% endblock %} 
