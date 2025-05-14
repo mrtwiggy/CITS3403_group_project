@@ -69,7 +69,7 @@ def dashboard():
         visit_count = 0
 
     # Get pending friend requests
-    friend_requests = current_user.received_friend_requests.filter_by(status='pending').all()
+    friend_requests = current_user.received_friend_requests()
     
     # Get all friends
     friends = current_user.get_all_friends()

@@ -2,9 +2,9 @@ from flask import Blueprint, jsonify, request, render_template, flash, redirect,
 from flask_login import login_required, current_user
 from my_app.models import User, Friendship, db
 
-bp = Blueprint('friends', __name__)
+friend_bp = Blueprint('friends', __name__)
 
-@bp.route('/friends')
+@friend_bp.route('/friends')
 @login_required
 def friends_list():
     """Show list of friends and pending requests"""
@@ -17,7 +17,7 @@ def friends_list():
                          pending_sent=pending_sent,
                          pending_received=pending_received)
 
-@bp.route('/friends/search')
+@friend_bp.route('/friends/search')
 @login_required
 def search_users():
     """Search for users to add as friends"""
@@ -32,7 +32,7 @@ def search_users():
     
     return render_template('friends/search.html', users=users, query=query)
 
-@bp.route('/friends/request/<int:user_id>', methods=['POST'])
+@friend_bp.route('/friends/request/<int:user_id>', methods=['POST'])
 @login_required
 def send_request(user_id):
     """Send a friend request"""
@@ -41,7 +41,7 @@ def send_request(user_id):
     # Check if request is AJAX
     is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
     
-    if current_user.has_friend_request_pending(user):
+    if current_user.has_friend_requests_pending(user):
         message = 'Friend request already pending.'
         if is_ajax:
             return jsonify({'status': 'error', 'message': message}), 400
@@ -69,7 +69,7 @@ def send_request(user_id):
         return jsonify({'status': 'error', 'message': 'Unknown error'}), 400
     return redirect(url_for('friends.friends_list'))
 
-@bp.route('/friends/accept/<int:user_id>', methods=['POST'])
+@friend_bp.route('/friends/accept/<int:user_id>', methods=['POST'])
 @login_required
 def accept_request(user_id):
     """Accept a friend request"""
@@ -92,7 +92,7 @@ def accept_request(user_id):
         return jsonify({'status': 'error', 'message': 'Unknown error'}), 400
     return redirect(url_for('friends.friends_list'))
 
-@bp.route('/friends/reject/<int:user_id>', methods=['POST'])
+@friend_bp.route('/friends/reject/<int:user_id>', methods=['POST'])
 @login_required
 def reject_request(user_id):
     """Reject a friend request"""
@@ -115,7 +115,7 @@ def reject_request(user_id):
         return jsonify({'status': 'error', 'message': 'Unknown error'}), 400
     return redirect(url_for('friends.friends_list'))
 
-@bp.route('/friends/remove/<int:user_id>', methods=['POST'])
+@friend_bp.route('/friends/remove/<int:user_id>', methods=['POST'])
 @login_required
 def remove_friend(user_id):
     """Remove a friend"""
