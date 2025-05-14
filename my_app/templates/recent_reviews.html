@@ -9,11 +9,13 @@
     <!-- Review Filters -->
     <div class="bg-white p-4 rounded-lg shadow-md mb-8">
         <div class="flex flex-wrap gap-4 items-center">
-            <!-- View Dropdown -->
-            <select id="view-select" class="p-2 border rounded focus:ring-2 focus:ring-pink-500 focus:border-pink-500">
-                <option value="public">🌍 Public Reviews</option>
-                <option value="friends">👥 Friends' Reviews</option>
-            </select>
+            <!-- View Dropdown with Label -->
+            <div class="flex items-center">
+                <select id="view-select" class="p-2 border rounded focus:ring-2 focus:ring-pink-500 focus:border-pink-500 bg-gradient-to-r from-pink-50 to-white">
+                    <option value="public">🌍 Public Reviews</option>
+                    <option value="friends">👥 Friends' Reviews</option>
+                </select>
+            </div>
 
             <!-- Search Bar -->
             <div class="w-full md:w-auto flex-grow">
@@ -182,8 +184,18 @@
         async function loadReviews() {
             reviewsContainer.innerHTML = '<div class="text-center py-8 text-gray-500">Loading reviews...</div>';
             
+            // Update the UI to show which view is active
+            const viewType = viewSelect.value;
+            document.querySelectorAll('.view-indicator').forEach(el => el.remove());
+            
+            // Disable the dropdown while loading
+            viewSelect.disabled = true;
+            viewSelect.classList.add('opacity-50');
+            
             try {
-                const response = await fetch(`/api/get_reviews?view=${viewSelect.value}`);
+                // Convert the view selection to the correct API parameter
+                const showFriends = viewSelect.value === 'friends';
+                const response = await fetch(`/api/get_reviews?friends=${showFriends}`);
                 if (!response.ok) throw new Error('Failed to load reviews');
                 
                 allReviews = await response.json();
@@ -191,6 +203,10 @@
             } catch (error) {
                 console.error('Error loading reviews:', error);
                 reviewsContainer.innerHTML = '<div class="text-center py-8 text-red-500">Failed to load reviews. Please try again.</div>';
+            } finally {
+                // Re-enable the dropdown
+                viewSelect.disabled = false;
+                viewSelect.classList.remove('opacity-50');
             }
         }
 
