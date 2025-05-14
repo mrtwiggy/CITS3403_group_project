@@ -28,7 +28,7 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
     
-    #get all friends for a user
+    #get all friends for a user 
     def get_all_friends(self):
         friendships = Friendship.query.filter(
             ((Friendship.user1_id == self.id) | (Friendship.user2_id == self.id)) &
@@ -43,9 +43,10 @@ class User(UserMixin, db.Model):
                 friends.append(f.user1)
         return friends
     
-    def has_friend_requests_pending(self):
+    def has_friend_requests_pending(self, user):
         current_requests = Friendship.query.filter(
-            ((Friendship.user2_id == self.id)) &
+            (Friendship.user1_id == user.id) &
+            (Friendship.user2_id == self.id) &
             (Friendship.status == 'pending')
         ).all()
 
@@ -69,29 +70,12 @@ class User(UserMixin, db.Model):
     #returns boolean value of friendship existing
     def is_friend_with(self, user):
         friendship = Friendship.query.filter(
-            ((Friendship.user1_id == self.id & Friendship.user2_id == user.id) | 
-             (Friendship.user1_id == user.id & Friendship.user2_id == self.id)) &
+            (((Friendship.user1_id == self.id) & (Friendship.user2_id == user.id)) | 
+             ((Friendship.user1_id == user.id) & (Friendship.user2_id == self.id))) &
             (Friendship.status == 'accepted')
         ).all()
 
         return bool(friendship)
-    
-    #changes 'pending' line in table to 'accept'
-    def accept_friend_request(self, user):
-        # Find the pending friendship request between user1 and user2
-        pending_request = Friendship.query.filter(
-            (Friendship.user1_id == user.id) &
-            (Friendship.user2_id == self.id) &
-            (Friendship.status == 'pending')
-        ).first()  # Use .first() to get a single result
-
-        if pending_request:
-            # Update the status to 'accepted'
-            pending_request.status = 'accepted'
-            db.session.commit()  # Save the changes to the database
-            return True  # Successfully accepted the request
-
-        return False  # No pending request found
 
 class Review(db.Model):
     __tablename__ = 'reviews'
