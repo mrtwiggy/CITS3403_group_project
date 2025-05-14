@@ -238,22 +238,21 @@
             <!-- Friends List -->
             <div class="space-y-3 max-h-96 overflow-y-auto" id="friends-list">
                 {% if friends %}
-                    {% for friend in friends %}
+                    {% for user in friends %}
                         <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                             <div class="flex items-center space-x-3">
-                                <img src="{{ url_for('static', filename='profile_pics/' + friend.profile_pic) }}" 
-                                     alt="{{ friend.username }}" 
+                                <img src="{{ url_for('static', filename='profile_pics/' + user.profile_pic) }}" 
+                                     alt="{{ user.username }}" 
                                      class="w-10 h-10 rounded-full">
                                 <div>
-                                    <h4 class="font-medium">@{{ friend.username }}</h4>
-                                    <p class="text-sm text-gray-500">{{ friend.reviews|length }} reviews</p>
+                                    <h4 class="font-medium">@{{ user.username }}</h4>
                                 </div>
                             </div>
-                            <button onclick="handleFriendAction({{ friend.id }}, 'remove', this)" 
-                                    class="text-gray-400 hover:text-red-500 transition-colors">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                </svg>
+                            <button class="accept-btn bg-pink-500 text-white px-3 py-1 rounded-md text-sm hover:bg-pink-600 transition"
+                            data-userid="{{ user.id }}"
+                            data-action="accept">
+
+                                remove
                             </button>
                         </div>
                     {% endfor %}
@@ -440,7 +439,6 @@
         });
     
         const acceptButtons = document.querySelectorAll('.accept-btn');
-        console.log('Found accept buttons:', acceptButtons.length);
         
         acceptButtons.forEach(button => {
             console.log(typeof(button.dataset.userid));
@@ -450,7 +448,6 @@
                 event.preventDefault();
                 
                 const userId = parseInt(button.dataset.userid, 10);
-                console.log(typeof(userId))
                 const action = button.dataset.action;
                 
                 console.log(`Button clicked! UserID: ${userId}, Action: ${action}`);
