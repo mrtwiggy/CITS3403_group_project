@@ -128,7 +128,8 @@ def recent_reviews():
 @main_bp.route('/api/get_reviews')
 @login_required
 def get_reviews():
-    limit = request.args.get('limit', type=int)
+    limit = request.args.get('limit', type=int, default=5)  # Default to 5 reviews
+    offset = request.args.get('offset', type=int, default=0)  # Default to first page
     show_friends = request.args.get('friends', 'false') == 'true'
     
     # Base query for reviews with proper joins
@@ -156,14 +157,12 @@ def get_reviews():
             )
         )
     
-    # Order by most recent and limit if specified
-    reviews = base_query.order_by(Review.uploaded_at.desc())
-    if limit:
-        reviews = reviews.limit(limit)
-    else:
-        reviews = reviews.limit(50)
+    # Get total count for pagination
+    total_count = base_query.count()
     
-    reviews = reviews.all()
+    # Order by most recent and apply pagination
+    reviews = base_query.order_by(Review.uploaded_at.desc())
+    reviews = reviews.offset(offset).limit(limit).all()
     
     # Format reviews
     results = []
@@ -195,7 +194,11 @@ def get_reviews():
             'is_current_user': review.user_id == current_user.id
         })
     
-    return jsonify(results)
+    return jsonify({
+        'reviews': results,
+        'total_count': total_count,
+        'has_more': offset + limit < total_count
+    })
 
 @main_bp.route('/explore')
 @login_required
@@ -389,3 +392,43 @@ def get_active_users():
         })
     
     return jsonify(results)
+
+@main_bp.route('/api/user_reviews')
+@login_required
+def get_user_reviews():
+    limit = request.args.get('limit', type=int, default=3)  # Default to 3 reviews
+    offset = request.args.get('offset', type=int, default=0)  # Default to first page
+    
+    # Get user reviews
+    reviews_query = Review.query.filter(
+        Review.user_id == current_user.id
+    ).order_by(Review.uploaded_at.desc())
+    
+    # Get total count for pagination
+    total_count = reviews_query.count()
+    
+    # Apply pagination
+    reviews = reviews_query.offset(offset).limit(limit).all()
+    
+    # Format reviews
+    results = []
+    for review in reviews:
+        results.append({
+            'id': review.id,
+            'drink_name': review.drink_name,
+            'franchise_id': review.franchise_id,
+            'franchise_name': review.franchise.name if review.franchise else 'Unknown',
+            'location': {
+                'id': review.location.id if review.location else None,
+                'name': review.location.name if review.location else None
+            },
+            'review_content': review.review_content,
+            'review_rating': review.review_rating,
+            'uploaded_at': review.uploaded_at.strftime('%B %d, %Y')
+        })
+    
+    return jsonify({
+        'reviews': results,
+        'total_count': total_count,
+        'has_more': offset + limit < total_count
+    })

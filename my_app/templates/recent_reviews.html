@@ -22,6 +22,7 @@
                        placeholder="Search reviews..." 
                        class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-pink-500">
             </div>
+            
             <select id="franchise-select" class="p-2 border rounded">
                 <option value="">All Franchises</option>
                 <option value="Boba Boba">Boba Boba</option>
@@ -59,6 +60,13 @@
         <!-- Reviews will be populated by JavaScript -->
         <div class="text-center py-8 text-gray-500">Loading reviews...</div>
     </div>
+    
+    <!-- Load More Button -->
+    <div id="load-more-container" class="mt-8 text-center hidden">
+        <button id="load-more-btn" class="bg-pink-400 text-white py-2 px-6 rounded-full hover:bg-pink-500 transition duration-300">
+            Load More Reviews
+        </button>
+    </div>
 </main>
 {% endblock %}
 
@@ -72,9 +80,14 @@
         const locationSelect = document.getElementById('location-select');
         const ratingSelect = document.getElementById('rating-select');
         const sortSelect = document.getElementById('sort-select');
+        const loadMoreBtn = document.getElementById('load-more-btn');
+        const loadMoreContainer = document.getElementById('load-more-container');
         
         let allReviews = [];
         let filteredReviews = [];
+        let currentOffset = 0;
+        let hasMoreReviews = false;
+        const reviewsPerPage = 5;
 
         // Function to format date
         function formatDate(dateString) {
@@ -176,26 +189,71 @@
             reviewsContainer.innerHTML = filteredReviews.length > 0
                 ? filteredReviews.map(renderReview).join('')
                 : '<div class="text-center py-8 text-gray-500">No reviews found matching your filters.</div>';
+                
+            // Hide load more button when filtering
+            loadMoreContainer.classList.add('hidden');
         }
 
         // Function to load reviews
-        async function loadReviews() {
-            reviewsContainer.innerHTML = '<div class="text-center py-8 text-gray-500">Loading reviews...</div>';
+        async function loadReviews(append = false) {
+            if (!append) {
+                reviewsContainer.innerHTML = '<div class="text-center py-8 text-gray-500">Loading reviews...</div>';
+                currentOffset = 0;
+                allReviews = [];
+            }
             
             try {
-                const response = await fetch(`/api/get_reviews?view=${viewSelect.value}`);
+                const view = viewSelect.value === 'friends' ? 'true' : 'false';
+                const response = await fetch(`/api/get_reviews?friends=${view}&offset=${currentOffset}&limit=${reviewsPerPage}`);
                 if (!response.ok) throw new Error('Failed to load reviews');
                 
-                allReviews = await response.json();
-                applyFilters();
+                const data = await response.json();
+                
+                if (append) {
+                    allReviews = [...allReviews, ...data.reviews];
+                    const newReviewsHtml = data.reviews.map(renderReview).join('');
+                    // Remove loading indicator if it exists
+                    const loadingIndicator = reviewsContainer.querySelector('.text-center.py-8.text-gray-500');
+                    if (loadingIndicator) {
+                        reviewsContainer.removeChild(loadingIndicator);
+                    }
+                    // Append new reviews
+                    reviewsContainer.innerHTML += newReviewsHtml;
+                } else {
+                    allReviews = data.reviews;
+                    reviewsContainer.innerHTML = data.reviews.length > 0
+                        ? data.reviews.map(renderReview).join('')
+                        : '<div class="text-center py-8 text-gray-500">No reviews found.</div>';
+                }
+                
+                // Update pagination state
+                hasMoreReviews = data.has_more;
+                currentOffset += data.reviews.length;
+                
+                // Show/hide load more button
+                if (hasMoreReviews) {
+                    loadMoreContainer.classList.remove('hidden');
+                } else {
+                    loadMoreContainer.classList.add('hidden');
+                }
             } catch (error) {
                 console.error('Error loading reviews:', error);
-                reviewsContainer.innerHTML = '<div class="text-center py-8 text-red-500">Failed to load reviews. Please try again.</div>';
+                if (!append) {
+                    reviewsContainer.innerHTML = '<div class="text-center py-8 text-red-500">Failed to load reviews. Please try again.</div>';
+                }
             }
         }
 
+        // Load more reviews
+        loadMoreBtn.addEventListener('click', function() {
+            loadReviews(true);
+        });
+
         // Event listeners
-        viewSelect.addEventListener('change', loadReviews);
+        viewSelect.addEventListener('change', function() {
+            loadReviews(false);
+        });
+        
         searchInput.addEventListener('input', applyFilters);
         franchiseSelect.addEventListener('change', applyFilters);
         ratingSelect.addEventListener('change', applyFilters);
