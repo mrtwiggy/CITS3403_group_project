@@ -245,7 +245,8 @@
                                      alt="{{ user.username }}" 
                                      class="w-10 h-10 rounded-full">
                                 <div>
-                                    <h4 class="font-medium">@{{ user.username }}</h4>
+                                    <h4 class="font-medium">@{{ friend.username }}</h4>
+                                    <p class="text-sm text-gray-500">{{ friend.reviews.all()|length }} reviews</p>
                                 </div>
                             </div>
                             <button class="accept-btn bg-pink-500 text-white px-3 py-1 rounded-md text-sm hover:bg-pink-600 transition"
@@ -473,6 +474,46 @@
                     }
                 } catch (error) {
                     console.error("Error accepting friend request:", error);
+                }
+            });
+        });
+
+        const rejectButtons = document.querySelectorAll('.reject-btn');
+
+        rejectButtons.forEach(button => {
+            console.log(typeof(button.dataset.userid));
+            
+            button.addEventListener('click', async (event) => {
+                // Prevent default form submission if this is in a form
+                event.preventDefault();
+                
+                const userId = parseInt(button.dataset.userid, 10);
+                console.log(typeof(userId))
+                const action = button.dataset.action;
+                
+                console.log(`Button clicked! UserID: ${userId}, Action: ${action}`);
+                
+                try {
+                    const response = await fetch(`/friends/${action}/${(userId)}`, {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        // Successfully processed the request
+                        button.textContent = "Rejected";
+                        button.disabled = true;
+                        console.log("Friend request rejected");
+                    } else {
+                        // Server returned an error
+                        const errorData = await response.json().catch(() => ({}));
+                        console.error("Failed to reject friend request:", response.status, errorData);
+                    }
+                } catch (error) {
+                    console.error("Error rejecting friend request:", error);
                 }
             });
         });
