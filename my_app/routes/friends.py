@@ -32,42 +32,32 @@ def search_users():
     
     return render_template('friends/search.html', users=users, query=query)
 
-@friend_bp.route('/friends/request/<int:user_id>', methods=['POST'])
+@friend_bp.route('/request/<int:user_id>', methods=['POST'])
 @login_required
 def send_request(user_id):
-    """Send a friend request"""
     user = User.query.get_or_404(user_id)
-    
-    # Check if request is AJAX
-    is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+
+    if current_user.id == user.id:
+        flash("You can't friend yourself.", "warning")
+        return redirect(url_for('friends.friends_list'))
     
     if current_user.has_friend_requests_pending(user):
-        message = 'Friend request already pending.'
-        if is_ajax:
-            return jsonify({'status': 'error', 'message': message}), 400
-        flash(message, 'warning')
+        flash("Friend request already sent.", "warning")
+        
     elif current_user.is_friend_with(user):
-        message = 'You are already friends.'
-        if is_ajax:
-            return jsonify({'status': 'error', 'message': message}), 400
-        flash(message, 'warning')
-    else:
-        friendship = current_user.send_friend_request(user)
-        if friendship:
-            db.session.commit()
-            message = f'Friend request sent to {user.username}!'
-            if is_ajax:
-                return jsonify({'status': 'success', 'message': message})
-            flash(message, 'success')
-        else:
-            message = 'Could not send friend request.'
-            if is_ajax:
-                return jsonify({'status': 'error', 'message': message}), 400
-            flash(message, 'error')
+        flash("You are already friends.", "warning")
     
-    if is_ajax:
-        return jsonify({'status': 'error', 'message': 'Unknown error'}), 400
-    return redirect(url_for('friends.friends_list'))
+    else:
+        new_friend = Friendship(
+            user1_id = current_user.id,
+            user2_id = user.id,
+            status = 'pending'
+        )
+
+        db.session.add(new_friend)
+        db.session.commit()
+
+    return redirect(url_for('main.explore'))
 
 @friend_bp.route('/friends/accept/<int:user_id>', methods=['POST'])
 @login_required

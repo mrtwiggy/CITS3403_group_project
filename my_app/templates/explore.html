@@ -136,27 +136,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Handle friendship button clicks
-    async function handleFriendshipAction(e) {
-        const btn = e.target;
-        const userId = btn.dataset.userId;
-        
-        try {
-            const response = await fetch(`/friends/request/${userId}`, {
-                method: 'POST',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            });
-            
-            if (response.ok) {
-                btn.outerHTML = '<span class="text-sm text-gray-600">Requested</span>';
-            }
-        } catch (error) {
-            console.error('Error sending friend request:', error);
-        }
-    }
-
     // Load and display trending data
     async function loadTrendingData() {
         try {
@@ -226,6 +205,33 @@ document.addEventListener('DOMContentLoaded', function() {
             day: 'numeric' 
         });
     }
+
+    document.addEventListener('click', async function (e) {
+        if (e.target.classList.contains('friendship-btn')) {
+            const button = e.target;
+            const userId = button.dataset.userId;
+
+            try {
+                const response = await fetch(`/friends/request/${userId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    button.outerHTML = `<span class="text-sm text-gray-600">Requested</span>`;
+                } else {
+                    const error = await response.text();
+                    alert('Failed to send request: ' + error);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('An error occurred while sending the friend request.');
+            }
+        }
+    });
+
 
     // Initial load
     loadTrendingData();
