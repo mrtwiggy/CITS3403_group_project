@@ -112,6 +112,10 @@
 
         // Function to render a single review
         function renderReview(review) {
+            const locationText = review.location && review.location.name 
+                ? `${review.franchise.name} • ${review.location.name}`
+                : review.franchise.name;
+
             return `
                 <div class="bg-white p-6 rounded-lg shadow-md review-card ${review.is_private ? 'border-l-4 border-pink-400' : ''}" data-franchise="${review.franchise.name}" data-rating="${review.rating}">
                     <div class="flex justify-between items-start mb-4">
@@ -124,7 +128,7 @@
                                     ${review.drink_name}
                                     ${review.is_private ? '<span class="ml-2 text-sm text-pink-600">👥 Friends Only</span>' : ''}
                                 </h3>
-                                <p class="text-gray-600">${review.franchise.name} • ${review.location.name}</p>
+                                <p class="text-gray-600">${locationText}</p>
                             </div>
                         </div>
                         <div class="text-3xl">${renderRating(review.rating)}</div>
