@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request, render_template, flash, redirect, url_for
 from flask_login import login_required, current_user
-from my_app.models import User, Friendship, db
+from my_app.models import User, Friendship, db 
 
 friend_bp = Blueprint('friends', __name__)
 

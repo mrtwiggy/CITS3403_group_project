@@ -53,10 +53,13 @@ def create_review():
 
     # Populate location choices based on selected franchise_id
     if franchise_id:
-        franchise_locations = FranchiseLocation.query.filter_by(
-            franchise_id=franchise_id
-        ).join(Location, FranchiseLocation.location_id == Location.id).all()
-        form.location_id.choices = [(fl.location_id, Location.query.get(fl.location_id).name) for fl in franchise_locations]
+        locations = (
+        db.session.query(Location.id, Location.name)
+        .join(FranchiseLocation, FranchiseLocation.location_id == Location.id)
+        .filter(FranchiseLocation.franchise_id == franchise_id)
+        .all()
+        )
+        form.location_id.choices = [(loc.id, loc.name) for loc in locations]
     else:
         form.location_id.choices = [(0, 'Select Location')]
 
@@ -64,7 +67,7 @@ def create_review():
     if form.validate_on_submit():
         # Get the franchise location to extract franchise_id and location_id
         franchise_id = form.franchise_id.data
-        location_id = form.location_id.data  # This is now the location_id
+        location_id = form.location_id.data - franchise_id*100 # This is now the location_id
         
         # Create the review with split franchise and location IDs
         new_review = Review(
