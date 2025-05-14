@@ -2,8 +2,8 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_required, current_user
 from my_app.forms import ReviewForm
-from my_app.models import Franchise, Review, User, Friendship
-from sqlalchemy import func, or_
+from my_app.models import Franchise, Review, User, Friendship, Location
+from sqlalchemy import func, or_, desc
 from my_app import db 
 from datetime import datetime, timedelta
 
@@ -131,8 +131,14 @@ def get_reviews():
     limit = request.args.get('limit', type=int)
     show_friends = request.args.get('friends', 'false') == 'true'
     
-    # Base query for reviews
-    base_query = db.session.query(Review).join(User)
+    # Base query for reviews with proper joins
+    base_query = db.session.query(Review).join(
+        User
+    ).join(
+        Franchise, Review.franchise_id == Franchise.id, isouter=True
+    ).join(
+        Location, Review.location_id == Location.id, isouter=True
+    )
     
     if show_friends:
         # Get friend IDs
@@ -175,7 +181,8 @@ def get_reviews():
             },
             'location': {
                 'id': review.location.id if review.location else None,
-                'name': review.location.name if review.location else 'Unknown'
+                'name': review.location.name if review.location else None,
+                'address': review.location.address if review.location and hasattr(review.location, 'address') else None
             },
             'drink_name': review.drink_name,
             'drink_size': review.drink_size,
@@ -211,19 +218,15 @@ def search_users():
     # Format user data with friendship status
     results = []
     for user in users:
+        # Check friendship status
+        friendship = Friendship.query.filter(
+            ((Friendship.user1_id == current_user.id) & (Friendship.user2_id == user.id)) |
+            ((Friendship.user1_id == user.id) & (Friendship.user2_id == current_user.id))
+        ).first()
+        
         friendship_status = 'none'
-        if current_user.is_friend_with(user):
-            friendship_status = 'friends'
-        elif current_user.has_friend_request_pending(user):
-            # Check if current user sent or received the request
-            sent_request = current_user.sent_friend_requests.filter_by(
-                receiver_id=user.id, 
-                status='pending'
-            ).first()
-            if sent_request:
-                friendship_status = 'request_sent'
-            else:
-                friendship_status = 'request_received'
+        if friendship:
+            friendship_status = friendship.status
         
         results.append({
             'id': user.id,
@@ -234,110 +237,133 @@ def search_users():
     
     return jsonify(results)
 
-@main_bp.route('/api/get_leaderboard')
+@main_bp.route('/api/trending_reviews')
+@login_required
+def get_trending_reviews():
+    # Get 3 most recent reviews
+    recent_reviews = Review.query.filter(
+        or_(Review.is_private == False, Review.user_id == current_user.id)
+    ).order_by(Review.uploaded_at.desc()).limit(3).all()
+    
+    # Get 3 most active users based on review count
+    active_users = db.session.query(
+        User,
+        func.count(Review.id).label('review_count')
+    ).join(Review).group_by(User.id).order_by(
+        desc('review_count')
+    ).limit(3).all()
+    
+    return jsonify({
+        'recent_reviews': [{
+            'id': review.id,
+            'username': review.user.username,
+            'drink_name': review.drink_name,
+            'franchise_name': review.franchise.name if review.franchise else None,
+            'rating': review.review_rating,
+            'content': review.review_content,
+            'uploaded_at': review.uploaded_at.strftime('%Y-%m-%d %H:%M:%S')
+        } for review in recent_reviews],
+        'active_users': [{
+            'username': user.username,
+            'review_count': count,
+            'profile_pic': user.profile_pic
+        } for user, count in active_users]
+    })
+
+@main_bp.route('/api/leaderboard')
 @login_required
 def get_leaderboard():
-    show_friends = request.args.get('friends', 'false') == 'true'
+    view_type = request.args.get('view', 'public')
     
+    # Subquery to get each user's favorite franchise
+    favorite_franchise_subq = db.session.query(
+        Review.user_id,
+        Franchise.name.label('franchise_name'),
+        func.count().label('visit_count')
+    ).join(
+        Franchise, Review.franchise_id == Franchise.id
+    ).group_by(
+        Review.user_id,
+        Franchise.name
+    ).order_by(
+        Review.user_id,
+        func.count().desc()
+    ).subquery()
+
     # Base query to get user stats
     base_query = db.session.query(
         User,
         func.count(Review.id).label('total_reviews'),
-        func.count(func.distinct(Review.franchise_id)).label('unique_franchises')
-    ).join(Review, User.id == Review.user_id, isouter=True)  # Use outer join to include users with no reviews
+        func.first_value(favorite_franchise_subq.c.franchise_name).over(
+            partition_by=User.id,
+            order_by=favorite_franchise_subq.c.visit_count.desc()
+        ).label('favorite_franchise')
+    ).outerjoin(
+        Review, User.id == Review.user_id
+    ).outerjoin(
+        favorite_franchise_subq, User.id == favorite_franchise_subq.c.user_id
+    )
     
-    if show_friends:
-        # Get IDs of all friends and current user
+    if view_type == 'friends':
+        # Get friend IDs
         friend_ids = [friend.id for friend in current_user.get_all_friends()]
         friend_ids.append(current_user.id)  # Include current user
         base_query = base_query.filter(User.id.in_(friend_ids))
     
     # Group and order results
-    results = base_query.group_by(User).order_by(
+    results = base_query.group_by(
+        User.id,
+        favorite_franchise_subq.c.franchise_name
+    ).having(
+        func.count(Review.id) > 0  # Only show users with reviews
+    ).order_by(
         func.count(Review.id).desc()
-    ).limit(10).all()
-    
-    # If current user is not in results and we're not in friends view, get their rank
-    if not show_friends and not any(user.id == current_user.id for user, _, _ in results):
-        # Get current user's rank
-        current_user_rank = db.session.query(
-            func.count(User.id) + 1
-        ).select_from(User).join(
-            Review, User.id == Review.user_id
-        ).group_by(User.id).having(
-            func.count(Review.id) > (
-                db.session.query(func.count(Review.id))
-                .filter(Review.user_id == current_user.id)
-                .scalar() or 0
-            )
-        ).scalar() or 1
-
-        # Get current user's stats
-        current_user_stats = db.session.query(
-            func.count(Review.id).label('total_reviews')
-        ).filter(
-            Review.user_id == current_user.id
-        ).first()
-        
-        # Get current user's favorite franchise
-        favorite_franchise = db.session.query(
-            Franchise.name,
-            func.count(Review.id).label('visit_count')
-        ).join(Review).filter(
-            Review.user_id == current_user.id
-        ).group_by(Franchise.id).order_by(
-            func.count(Review.id).desc()
-        ).first()
-        
-        # Get current user's favorite drink
-        favorite_drink = db.session.query(
-            Review.drink_name,
-            func.count(Review.id).label('drink_count')
-        ).filter(
-            Review.user_id == current_user.id
-        ).group_by(Review.drink_name).order_by(
-            func.count(Review.id).desc()
-        ).first()
-        
-        # Add current user to results with their actual rank
-        results.append((
-            current_user,
-            current_user_stats[0] if current_user_stats else 0,
-            0  # unique franchises not needed anymore
-        ))
+    ).all()
     
     # Format results
     leaderboard = []
-    for rank, (user, total_reviews, _) in enumerate(results, 1):
-        # Get user's favorite franchise
-        favorite_franchise = db.session.query(
-            Franchise.name,
-            func.count(Review.id).label('visit_count')
-        ).join(Review).filter(
-            Review.user_id == user.id
-        ).group_by(Franchise.id).order_by(
-            func.count(Review.id).desc()
-        ).first()
-        
-        # Get user's favorite drink
-        favorite_drink = db.session.query(
-            Review.drink_name,
-            func.count(Review.id).label('drink_count')
-        ).filter(
-            Review.user_id == user.id
-        ).group_by(Review.drink_name).order_by(
-            func.count(Review.id).desc()
-        ).first()
-        
+    for rank, (user, total_reviews, favorite_franchise) in enumerate(results, 1):
         leaderboard.append({
             'rank': rank,
             'user_id': user.id,
             'username': user.username,
             'profile_pic': user.profile_pic,
-            'favorite_store': favorite_franchise[0] if favorite_franchise else 'N/A',
-            'favorite_drink': favorite_drink[0] if favorite_drink else 'N/A',
-            'total_bobas': total_reviews,
+            'total_reviews': total_reviews,
+            'favorite_franchise': favorite_franchise or 'No reviews yet',
             'is_current_user': user.id == current_user.id
+        })
+    
+    # If current user is not in results and we're not in friends view, add them at the end
+    if not any(entry['user_id'] == current_user.id for entry in leaderboard) and view_type != 'friends':
+        # Get current user's stats
+        user_stats = db.session.query(
+            func.count(Review.id).label('total_reviews'),
+            Franchise.name.label('favorite_franchise')
+        ).outerjoin(
+            Review, User.id == Review.user_id
+        ).outerjoin(
+            Franchise, Review.franchise_id == Franchise.id
+        ).filter(
+            User.id == current_user.id
+        ).group_by(
+            Franchise.name
+        ).order_by(
+            func.count(Review.id).desc()
+        ).first()
+
+        if user_stats:
+            total_reviews, favorite_franchise = user_stats
+        else:
+            total_reviews, favorite_franchise = 0, None
+
+        leaderboard.append({
+            'rank': len(leaderboard) + 1,
+            'user_id': current_user.id,
+            'username': current_user.username,
+            'profile_pic': current_user.profile_pic,
+            'total_reviews': total_reviews,
+            'favorite_franchise': favorite_franchise or 'No reviews yet',
+            'is_current_user': True
         })
     
     return jsonify(leaderboard)
