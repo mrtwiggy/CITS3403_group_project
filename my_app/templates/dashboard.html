@@ -398,7 +398,7 @@
         const weeklyActivityChart = new Chart(weeklyActivityCtx, {
             type: 'bar',
             data: {
-                labels: {{ weekly_labels|tojson }},
+                labels: {{ weekly_labels|tojson}},
                 datasets: [{
                     label: 'Boba Reviews',
                     data: {{ weekly_data|tojson }},
