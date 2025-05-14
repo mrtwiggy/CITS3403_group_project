@@ -114,7 +114,7 @@
                                             </button>
                                             <button 
                                                 class="reject-btn bg-gray-500 text-white px-3 py-1 rounded-md text-sm hover:bg-gray-600 transition"
-                                                data-user-id="{{ user.id }}"
+                                                data-userid="{{ user.id }}"
                                                 data-action="reject">
                                                 Reject
                                             </button>
@@ -246,14 +246,13 @@
                                      class="w-10 h-10 rounded-full">
                                 <div>
                                     <h4 class="font-medium">@{{ friend.username }}</h4>
-                                    <p class="text-sm text-gray-500">{{ friend.reviews|length }} reviews</p>
+                                    <p class="text-sm text-gray-500">{{ friend.reviews.all()|length }} reviews</p>
                                 </div>
                             </div>
-                            <button onclick="handleFriendAction({{ friend.id }}, 'remove', this)" 
-                                    class="text-gray-400 hover:text-red-500 transition-colors">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                </svg>
+                            <button class="remove-btn bg-pink-500 text-white px-3 py-1 rounded-md text-sm hover:bg-pink-600 transition"
+                            data-userid="{{ friend.id }}"
+                            data-action="remove">
+                                remove
                             </button>
                         </div>
                     {% endfor %}
@@ -373,10 +372,10 @@
         const weeklyActivityChart = new Chart(weeklyActivityCtx, {
             type: 'bar',
             data: {
-                labels: {{ weekly_labels|tojson|safe }},
+                labels: {{ weekly_labels|tojson }},
                 datasets: [{
                     label: 'Boba Reviews',
-                    data: {{ weekly_data|tojson|safe  }},
+                    data: {{ weekly_data|tojson }},
                     backgroundColor: 'rgba(219, 39, 119, 0.5)',
                     borderColor: 'rgb(219, 39, 119)',
                     borderWidth: 1
@@ -407,7 +406,7 @@
             data: {
                 labels: {{ franchise_labels|tojson }},
                 datasets: [{
-                    data: {{ franchise_data|tojson|safe }},
+                    data: {{ franchise_data|tojson }},
                     backgroundColor: [
                         'rgba(219, 39, 119, 0.5)',
                         'rgba(59, 130, 246, 0.5)',
@@ -440,7 +439,6 @@
         });
     
         const acceptButtons = document.querySelectorAll('.accept-btn');
-        console.log('Found accept buttons:', acceptButtons.length);
         
         acceptButtons.forEach(button => {
             console.log(typeof(button.dataset.userid));
@@ -450,7 +448,6 @@
                 event.preventDefault();
                 
                 const userId = parseInt(button.dataset.userid, 10);
-                console.log(typeof(userId))
                 const action = button.dataset.action;
                 
                 console.log(`Button clicked! UserID: ${userId}, Action: ${action}`);
@@ -479,6 +476,88 @@
                 }
             });
         });
+
+        const rejectButtons = document.querySelectorAll('.reject-btn');
+
+        rejectButtons.forEach(button => {
+            console.log(typeof(button.dataset.userid));
+            
+            button.addEventListener('click', async (event) => {
+                // Prevent default form submission if this is in a form
+                event.preventDefault();
+                
+                const userId = parseInt(button.dataset.userid, 10);
+                console.log(typeof(userId))
+                const action = button.dataset.action;
+                
+                console.log(`Button clicked! UserID: ${userId}, Action: ${action}`);
+                
+                try {
+                    const response = await fetch(`/friends/reject/${(userId)}`, {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        // Successfully processed the request
+                        button.textContent = "Rejected";
+                        button.disabled = true;
+                        console.log("Friend request rejected");
+                    } else {
+                        // Server returned an error
+                        const errorData = await response.json().catch(() => ({}));
+                        console.error("Failed to reject friend request:", response.status, errorData);
+                    }
+                } catch (error) {
+                    console.error("Error rejecting friend request:", error);
+                }
+            });
+        });
+
+        const removeButtons = document.querySelectorAll('.remove-btn');
+
+        removeButtons.forEach(button => {
+            console.log(typeof(button.dataset.userid));
+            
+            button.addEventListener('click', async (event) => {
+                // Prevent default form submission if this is in a form
+                event.preventDefault();
+                
+                const userId = parseInt(button.dataset.userid, 10);
+                console.log(typeof(userId))
+                const action = button.dataset.action;
+                
+                console.log(`Button clicked! UserID: ${userId}, Action: ${action}`);
+                
+                try {
+                    const response = await fetch(`/friends/${action}/${(userId)}`, {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        // Successfully processed the request
+                        button.textContent = "Removed";
+                        button.disabled = true;
+                        console.log("Friend removed");
+                    } else {
+                        // Server returned an error
+                        const errorData = await response.json().catch(() => ({}));
+                        console.error("Failed to remove friend", response.status, errorData);
+                    }
+                } catch (error) {
+                    console.error("Error removing friend request:", error);
+                }
+            });
+        });
+
+
     });
 </script>
 {% endblock %}
