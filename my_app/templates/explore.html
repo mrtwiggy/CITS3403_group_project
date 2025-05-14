@@ -4,9 +4,9 @@
 
 {% block content %}
 <main class="w-full px-4 sm:px-6 lg:px-8">
-    <div class="flex gap-6">
+    <div class="flex flex-col lg:flex-row gap-6">
         <!-- Left Sidebar -->
-        <div class="w-80 flex-shrink-0">
+        <div class="w-full lg:w-80 flex-shrink-0">
             <!-- Search Section -->
             <div class="bg-white rounded-2xl shadow-md p-6 mb-6">
                 <h3 class="text-lg font-semibold mb-4">Find Users</h3>
@@ -26,25 +26,19 @@
 
             <!-- Trending Section -->
             <div class="bg-white rounded-2xl shadow-md p-6">
-                <h3 class="text-lg font-semibold mb-4">Trending</h3>
-                <div class="space-y-4">
-                    <!-- Most Liked Review -->
-                    <div class="border-b pb-4">
-                        <h4 class="font-medium text-pink-600 mb-2">Most Liked Review</h4>
-                        <p class="text-sm text-gray-600 mb-2">"The brown sugar boba here is absolutely amazing! Perfect texture and sweetness."</p>
-                        <div class="flex items-center text-sm text-gray-500">
-                            <span class="mr-2">👍 128</span>
-                            <span>by @bobaLover</span>
-                        </div>
+                <h3 class="text-lg font-semibold mb-4">Recent Activity</h3>
+                <!-- Recent Reviews -->
+                <div class="mb-6">
+                    <h4 class="font-medium text-pink-600 mb-3">Latest Reviews</h4>
+                    <div id="recent-reviews" class="space-y-4">
+                        <!-- Recent reviews will be populated here -->
                     </div>
-                    <!-- Recent Review -->
-                    <div>
-                        <h4 class="font-medium text-pink-600 mb-2">Recent Review</h4>
-                        <p class="text-sm text-gray-600 mb-2">"Tried their new taro milk tea with boba. The flavor was rich and creamy!"</p>
-                        <div class="flex items-center text-sm text-gray-500">
-                            <span class="mr-2">👍 45</span>
-                            <span>by @teaEnthusiast</span>
-                        </div>
+                </div>
+                <!-- Most Active Users -->
+                <div>
+                    <h4 class="font-medium text-pink-600 mb-3">Most Active Users</h4>
+                    <div id="active-users" class="space-y-3">
+                        <!-- Active users will be populated here -->
                     </div>
                 </div>
             </div>
@@ -53,68 +47,26 @@
         <!-- Leaderboard -->
         <div class="flex-grow">
             <div class="bg-white rounded-2xl shadow-md p-6">
-                <!-- Leaderboard Header with Toggle -->
+                <!-- Leaderboard Header with Dropdown -->
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="text-2xl font-bold">Boba Leaderboard</h2>
-                    <div class="flex items-center space-x-4">
-                        <span class="text-sm font-medium text-gray-700" id="public-label">Public</span>
-                        <button type="button" id="view-toggle" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 bg-gray-200" role="switch" aria-checked="false">
-                            <span class="translate-x-0 pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out" id="toggle-slider"></span>
-                        </button>
-                        <span class="text-sm font-medium text-gray-700" id="friends-label">Friends</span>
-                    </div>
+                    <select id="leaderboard-view" class="p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500">
+                        <option value="public">Public Leaderboard</option>
+                        <option value="friends">Friends Leaderboard</option>
+                    </select>
                 </div>
 
                 <!-- Header Row -->
-                <div class="grid grid-cols-12 gap-1 font-semibold mb-4 pb-2 border-b">
+                <div class="grid grid-cols-12 gap-4 font-semibold mb-4 pb-2 border-b">
                     <div class="col-span-1 text-center">Rank</div>
-                    <div class="col-span-2">User</div>
-                    <div class="col-span-3">Favourite Store</div>
-                    <div class="col-span-2 text-center">Total Bobas</div>
-                    <div class="col-span-2 text-center">This Week</div>
-                    <div class="col-span-2 text-center">Streak</div>
+                    <div class="col-span-3">User</div>
+                    <div class="col-span-5">Favourite Store</div>
+                    <div class="col-span-3 text-center">Total Bobas</div>
                 </div>
 
-                <!-- Skeleton Rows -->
-                <div class="space-y-4" id="leaderboard-content">
-                    <!-- Row 1 -->
-                    <div class="grid grid-cols-12 gap-1 items-center p-2">
-                        <div class="col-span-1 font-bold text-2xl text-center">1</div>
-                        <div class="col-span-2 flex items-center">
-                            <div class="w-10 h-10 bg-gray-200 rounded-full"></div>
-                            <span class="ml-2">Loading...</span>
-                        </div>
-                        <div class="col-span-3">Loading...</div>
-                        <div class="col-span-2 text-center">-</div>
-                        <div class="col-span-2 text-center">-</div>
-                        <div class="col-span-2 text-center">-</div>
-                    </div>
-
-                    <!-- Row 2 -->
-                    <div class="grid grid-cols-12 gap-1 items-center p-2">
-                        <div class="col-span-1 font-bold text-2xl text-center">2</div>
-                        <div class="col-span-2 flex items-center">
-                            <div class="w-10 h-10 bg-gray-200 rounded-full"></div>
-                            <span class="ml-2">Loading...</span>
-                        </div>
-                        <div class="col-span-3">Loading...</div>
-                        <div class="col-span-2 text-center">-</div>
-                        <div class="col-span-2 text-center">-</div>
-                        <div class="col-span-2 text-center">-</div>
-                    </div>
-
-                    <!-- Row 3 -->
-                    <div class="grid grid-cols-12 gap-1 items-center p-2">
-                        <div class="col-span-1 font-bold text-2xl text-center">3</div>
-                        <div class="col-span-2 flex items-center">
-                            <div class="w-10 h-10 bg-gray-200 rounded-full"></div>
-                            <span class="ml-2">Loading...</span>
-                        </div>
-                        <div class="col-span-3">Loading...</div>
-                        <div class="col-span-2 text-center">-</div>
-                        <div class="col-span-2 text-center">-</div>
-                        <div class="col-span-2 text-center">-</div>
-                    </div>
+                <!-- Leaderboard Content -->
+                <div id="leaderboard-content" class="space-y-2">
+                    <!-- Leaderboard entries will be populated here -->
                 </div>
             </div>
         </div>
@@ -124,79 +76,167 @@
 
 {% block extra_js %}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const toggle = document.getElementById('view-toggle');
-        const slider = document.getElementById('toggle-slider');
-        const publicLabel = document.getElementById('public-label');
-        const friendsLabel = document.getElementById('friends-label');
-        const leaderboardContent = document.getElementById('leaderboard-content');
-        const userSearch = document.getElementById('user-search');
-        const searchResults = document.getElementById('search-results');
-        let isFriends = false;
+document.addEventListener('DOMContentLoaded', function() {
+    const userSearch = document.getElementById('user-search');
+    const searchResults = document.getElementById('search-results');
+    const leaderboardView = document.getElementById('leaderboard-view');
+    let searchTimeout;
 
-        function updateView(newState) {
-            isFriends = newState;
-            
-            // Update toggle appearance
-            if (isFriends) {
-                toggle.classList.remove('bg-gray-200');
-                toggle.classList.add('bg-pink-400');
-                slider.classList.remove('translate-x-0');
-                slider.classList.add('translate-x-5');
-            } else {
-                toggle.classList.add('bg-gray-200');
-                toggle.classList.remove('bg-pink-400');
-                slider.classList.add('translate-x-0');
-                slider.classList.remove('translate-x-5');
-            }
-
-            // Update label colors
-            publicLabel.classList.toggle('text-gray-700', !isFriends);
-            publicLabel.classList.toggle('text-pink-500', isFriends);
-            friendsLabel.classList.toggle('text-gray-700', isFriends);
-            friendsLabel.classList.toggle('text-pink-500', !isFriends);
-
-            // Add loading state to leaderboard
-            leaderboardContent.classList.add('opacity-50');
-            
-            // Simulate loading (this will be replaced with actual data loading later)
-            setTimeout(() => {
-                leaderboardContent.classList.remove('opacity-50');
-                console.log('View toggled:', isFriends ? 'Friends' : 'Public');
-            }, 300);
+    // User Search
+    userSearch.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        const query = this.value.trim();
+        
+        if (query.length < 2) {
+            searchResults.innerHTML = '';
+            return;
         }
 
-        toggle.addEventListener('click', function() {
-            updateView(!isFriends);
-        });
+        searchTimeout = setTimeout(async () => {
+            try {
+                const response = await fetch(`/api/search_users?q=${encodeURIComponent(query)}`);
+                const users = await response.json();
+                
+                searchResults.innerHTML = users.map(user => `
+                    <div class="flex items-center justify-between p-2 hover:bg-gray-50 rounded-lg">
+                        <div class="flex items-center">
+                            <img src="/static/profile_pics/${user.profile_pic}" 
+                                 alt="${user.username}" 
+                                 class="w-8 h-8 rounded-full mr-2">
+                            <span class="text-sm">@${user.username}</span>
+                        </div>
+                        ${getFriendshipButton(user)}
+                    </div>
+                `).join('');
 
-        // User search functionality
-        userSearch.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            if (searchTerm.length < 2) {
-                searchResults.innerHTML = '';
-                return;
+                // Add click handlers for friendship buttons
+                document.querySelectorAll('.friendship-btn').forEach(btn => {
+                    btn.addEventListener('click', handleFriendshipAction);
+                });
+            } catch (error) {
+                console.error('Error searching users:', error);
             }
+        }, 300);
+    });
 
-            // Simulate search results (replace with actual API call later)
-            const mockResults = [
-                { username: 'bobaLover', avatar: 'pfp1.png' },
-                { username: 'teaEnthusiast', avatar: 'pfp2.png' },
-                { username: 'bubbleTeaFan', avatar: 'pfp3.png' }
-            ].filter(user => user.username.toLowerCase().includes(searchTerm));
+    // Friendship button helper
+    function getFriendshipButton(user) {
+        switch(user.friendship_status) {
+            case 'accepted':
+                return `<span class="text-sm text-green-600">Friends</span>`;
+            case 'pending':
+                return `<span class="text-sm text-gray-600">Requested</span>`;
+            default:
+                return `
+                    <button class="friendship-btn bg-pink-100 text-pink-600 px-3 py-1 rounded text-sm hover:bg-pink-200"
+                            data-user-id="${user.id}">
+                        Add Friend
+                    </button>
+                `;
+        }
+    }
 
-            searchResults.innerHTML = mockResults.map(user => `
-                <div class="flex items-center p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
-                    <img src="{{ url_for('static', filename='images/${user.avatar}') }}" 
-                         alt="${user.username}" 
-                         class="w-8 h-8 rounded-full mr-2">
-                    <span class="text-sm">@${user.username}</span>
+    // Handle friendship button clicks
+    async function handleFriendshipAction(e) {
+        const btn = e.target;
+        const userId = btn.dataset.userId;
+        
+        try {
+            const response = await fetch(`/friends/request/${userId}`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            
+            if (response.ok) {
+                btn.outerHTML = '<span class="text-sm text-gray-600">Requested</span>';
+            }
+        } catch (error) {
+            console.error('Error sending friend request:', error);
+        }
+    }
+
+    // Load and display trending data
+    async function loadTrendingData() {
+        try {
+            const response = await fetch('/api/trending_reviews');
+            const data = await response.json();
+            
+            // Update recent reviews
+            document.getElementById('recent-reviews').innerHTML = data.recent_reviews.map(review => `
+                <div class="border-b pb-3 last:border-0 last:pb-0">
+                    <div class="flex items-center mb-2">
+                        <span class="font-medium">@${review.username}</span>
+                        <span class="mx-2">·</span>
+                        <span class="text-sm text-gray-500">${formatDate(review.uploaded_at)}</span>
+                    </div>
+                    <p class="text-sm text-gray-600">${review.drink_name} from ${review.franchise_name || 'Unknown'}</p>
                 </div>
             `).join('');
-        });
 
-        // Initialize the view
-        updateView(false);
-    });
+            // Update active users
+            document.getElementById('active-users').innerHTML = data.active_users.map(user => `
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <img src="/static/profile_pics/${user.profile_pic}" 
+                             alt="${user.username}" 
+                             class="w-8 h-8 rounded-full mr-2">
+                        <span class="text-sm">@${user.username}</span>
+                    </div>
+                    <span class="text-sm text-gray-500">${user.review_count} reviews</span>
+                </div>
+            `).join('');
+        } catch (error) {
+            console.error('Error loading trending data:', error);
+        }
+    }
+
+    // Load and display leaderboard
+    async function loadLeaderboard() {
+        try {
+            const view = leaderboardView.value;
+            const response = await fetch(`/api/leaderboard?view=${view}`);
+            const data = await response.json();
+            
+            document.getElementById('leaderboard-content').innerHTML = data.map(entry => `
+                <div class="grid grid-cols-12 gap-4 items-center p-2 rounded-lg ${entry.is_current_user ? 'bg-pink-50 font-medium' : 'hover:bg-gray-50'}">
+                    <div class="col-span-1 text-center">${entry.rank}</div>
+                    <div class="col-span-3 flex items-center space-x-2 min-w-0">
+                        <img src="/static/profile_pics/${entry.profile_pic}" 
+                             alt="${entry.username}" 
+                             class="w-8 h-8 rounded-full flex-shrink-0">
+                        <span class="truncate">@${entry.username}</span>
+                    </div>
+                    <div class="col-span-5 truncate">${entry.favorite_franchise}</div>
+                    <div class="col-span-3 text-center">${entry.total_reviews}</div>
+                </div>
+            `).join('');
+        } catch (error) {
+            console.error('Error loading leaderboard:', error);
+        }
+    }
+
+    // Helper function to format dates
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+        });
+    }
+
+    // Initial load
+    loadTrendingData();
+    loadLeaderboard();
+
+    // Update leaderboard when view changes
+    leaderboardView.addEventListener('change', loadLeaderboard);
+
+    // Refresh data periodically
+    setInterval(loadTrendingData, 60000); // Refresh trending data every minute
+    setInterval(loadLeaderboard, 60000); // Refresh leaderboard every minute
+});
 </script>
 {% endblock %} 
