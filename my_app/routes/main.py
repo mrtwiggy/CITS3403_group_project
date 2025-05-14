@@ -314,8 +314,6 @@ def get_leaderboard():
     results = base_query.group_by(
         User.id,
         favorite_franchise_subq.c.franchise_name
-    ).having(
-        func.count(Review.id) > 0  # Only show users with reviews
     ).order_by(
         func.count(Review.id).desc()
     ).all()
@@ -328,43 +326,12 @@ def get_leaderboard():
             'user_id': user.id,
             'username': user.username,
             'profile_pic': user.profile_pic,
-            'total_reviews': total_reviews,
+            'total_reviews': total_reviews or 0,  # Ensure total_reviews is 0 if None
             'favorite_franchise': favorite_franchise or 'No reviews yet',
             'is_current_user': user.id == current_user.id
         })
     
-    # If current user is not in results and we're not in friends view, add them at the end
-    if not any(entry['user_id'] == current_user.id for entry in leaderboard) and view_type != 'friends':
-        # Get current user's stats
-        user_stats = db.session.query(
-            func.count(Review.id).label('total_reviews'),
-            Franchise.name.label('favorite_franchise')
-        ).outerjoin(
-            Review, User.id == Review.user_id
-        ).outerjoin(
-            Franchise, Review.franchise_id == Franchise.id
-        ).filter(
-            User.id == current_user.id
-        ).group_by(
-            Franchise.name
-        ).order_by(
-            func.count(Review.id).desc()
-        ).first()
-
-        if user_stats:
-            total_reviews, favorite_franchise = user_stats
-        else:
-            total_reviews, favorite_franchise = 0, None
-
-        leaderboard.append({
-            'rank': len(leaderboard) + 1,
-            'user_id': current_user.id,
-            'username': current_user.username,
-            'profile_pic': current_user.profile_pic,
-            'total_reviews': total_reviews,
-            'favorite_franchise': favorite_franchise or 'No reviews yet',
-            'is_current_user': True
-        })
+    # No need to append current user separately since they will be included in the results
     
     return jsonify(leaderboard)
 
