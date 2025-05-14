@@ -61,12 +61,21 @@
         <!-- Reviews will be populated by JavaScript -->
         <div class="text-center py-8 text-gray-500">Loading reviews...</div>
     </div>
+    
+    <!-- Load More Button -->
+    <div class="mt-8 text-center" id="load-more-container" style="display: block !important;">
+        <button id="load-more-button" class="bg-pink-500 hover:bg-pink-600 text-white font-semibold py-2 px-6 rounded-full shadow-md transition duration-300">
+            Load More Reviews
+        </button>
+    </div>
 </main>
 {% endblock %}
 
 {% block extra_js %}
 <script>
+    // Wait for the DOM to be fully loaded
     document.addEventListener('DOMContentLoaded', function() {
+        // Get references to DOM elements
         const viewSelect = document.getElementById('view-select');
         const reviewsContainer = document.getElementById('reviews-container');
         const searchInput = document.getElementById('review-search');
@@ -74,9 +83,17 @@
         const locationSelect = document.getElementById('location-select');
         const ratingSelect = document.getElementById('rating-select');
         const sortSelect = document.getElementById('sort-select');
+        const loadMoreButton = document.getElementById('load-more-button');
+        const loadMoreContainer = document.getElementById('load-more-container');
         
+        // Make sure the load more container is visible
+        loadMoreContainer.style.display = 'block';
+        
+        // Initialize variables
         let allReviews = [];
         let filteredReviews = [];
+        let currentPage = 1;
+        const reviewsPerPage = 5;
 
         // Function to format date
         function formatDate(dateString) {
@@ -174,15 +191,147 @@
                 filteredReviews.sort((a, b) => new Date(b.uploaded_at) - new Date(a.uploaded_at));
             }
             
-            // Render filtered reviews
-            reviewsContainer.innerHTML = filteredReviews.length > 0
-                ? filteredReviews.map(renderReview).join('')
-                : '<div class="text-center py-8 text-gray-500">No reviews found matching your filters.</div>';
+            // Reset pagination
+            currentPage = 1;
+            
+            // Render first page of filtered reviews
+            renderReviews();
+        }
+
+        // Function to render reviews with pagination
+        function renderReviews() {
+            const startIndex = 0;
+            const endIndex = currentPage * reviewsPerPage;
+            const reviewsToShow = filteredReviews.slice(startIndex, endIndex);
+            
+            if (reviewsToShow.length > 0) {
+                reviewsContainer.innerHTML = reviewsToShow.map(renderReview).join('');
+                
+                // Show/hide load more button
+                if (filteredReviews.length > endIndex) {
+                    loadMoreContainer.style.display = 'block';
+                } else {
+                    // Don't hide the button if we have exactly reviewsPerPage reviews
+                    // This allows users to try loading more even if we're not sure there are more
+                    if (filteredReviews.length >= reviewsPerPage && currentPage === 1) {
+                        loadMoreContainer.style.display = 'block';
+                    } else {
+                        loadMoreContainer.style.display = 'none';
+                    }
+                }
+            } else {
+                reviewsContainer.innerHTML = '<div class="text-center py-8 text-gray-500">No reviews found matching your filters.</div>';
+                loadMoreContainer.style.display = 'none';
+            }
+        }
+
+        // Function to load more reviews
+        function loadMoreReviews() {
+            // Show loading state
+            loadMoreButton.textContent = 'Loading...';
+            loadMoreButton.disabled = true;
+            
+            // Increment page
+            currentPage++;
+            
+            // Convert the view selection to the correct API parameter
+            const showFriends = viewSelect.value === 'friends';
+            
+            // Fetch more reviews
+            const url = `/api/get_reviews?page=${currentPage}&per_page=${reviewsPerPage}&friends=${showFriends}`;
+            
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Failed to load more reviews`);
+                    }
+                    return response.json();
+                })
+                .then(newReviews => {
+                    if (newReviews.length > 0) {
+                        // Process each new review
+                        newReviews.forEach(review => {
+                            // Create the review element
+                            const reviewElement = document.createElement('div');
+                            reviewElement.className = 'bg-white p-6 rounded-lg shadow-md review-card';
+                            if (review.is_private) {
+                                reviewElement.classList.add('border-l-4', 'border-pink-400');
+                            }
+                            reviewElement.setAttribute('data-franchise', review.franchise.name);
+                            reviewElement.setAttribute('data-rating', review.rating);
+                            
+                            const locationText = review.location && review.location.name 
+                                ? `${review.franchise.name} • ${review.location.name}`
+                                : review.franchise.name;
+                                
+                            const formattedDate = formatDate(review.uploaded_at);
+                            const bobaRating = renderRating(review.rating);
+                            
+                            // Build HTML content
+                            reviewElement.innerHTML = `
+                                <div class="flex justify-between items-start mb-4">
+                                    <div class="flex items-center space-x-3">
+                                        <img src="{{ url_for('static', filename='profile_pics/') }}${review.user.profile_pic}"
+                                             alt="${review.user.username}"
+                                             class="w-10 h-10 rounded-full">
+                                        <div>
+                                            <h3 class="text-xl font-semibold flex items-center">
+                                                ${review.drink_name}
+                                                ${review.is_private ? '<span class="ml-2 text-sm text-pink-600">👥 Friends Only</span>' : ''}
+                                            </h3>
+                                            <p class="text-gray-600">${locationText}</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-3xl">${bobaRating}</div>
+                                </div>
+                                <div class="mb-4">
+                                    <div class="text-gray-700">${review.review_content}</div>
+                                    <div class="mt-2 text-sm text-gray-500">
+                                        ${review.drink_size} • 
+                                        Sugar: ${review.sugar_level} • 
+                                        Ice: ${review.ice_level}
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center text-sm text-gray-500">
+                                    <span>Posted by ${review.user.username} • ${formattedDate}</span>
+                                </div>
+                            `;
+                            
+                            // Add to container
+                            reviewsContainer.appendChild(reviewElement);
+                        });
+                        
+                        // Add the new reviews to our collection for filtering
+                        allReviews = allReviews.concat(newReviews);
+                        
+                        // Hide button if no more reviews
+                        if (newReviews.length < reviewsPerPage) {
+                            loadMoreContainer.style.display = 'none';
+                        }
+                    } else {
+                        // No more reviews to load
+                        loadMoreContainer.style.display = 'none';
+                    }
+                    
+                    // Reset button state
+                    loadMoreButton.textContent = 'Load More Reviews';
+                    loadMoreButton.disabled = false;
+                })
+                .catch(error => {
+                    loadMoreButton.textContent = 'Error loading reviews';
+                    setTimeout(() => {
+                        loadMoreButton.textContent = 'Load More Reviews';
+                        loadMoreButton.disabled = false;
+                    }, 2000);
+                });
         }
 
         // Function to load reviews
         async function loadReviews() {
             reviewsContainer.innerHTML = '<div class="text-center py-8 text-gray-500">Loading reviews...</div>';
+            
+            // Always hide the button while loading
+            loadMoreContainer.style.display = 'none'; 
             
             // Update the UI to show which view is active
             const viewType = viewSelect.value;
@@ -195,14 +344,22 @@
             try {
                 // Convert the view selection to the correct API parameter
                 const showFriends = viewSelect.value === 'friends';
-                const response = await fetch(`/api/get_reviews?friends=${showFriends}`);
+                const response = await fetch(`/api/get_reviews?page=1&per_page=${reviewsPerPage}&friends=${showFriends}`);
                 if (!response.ok) throw new Error('Failed to load reviews');
                 
                 allReviews = await response.json();
+                currentPage = 1;
+                
+                // Apply filters and render reviews
                 applyFilters();
+                
+                // Show the Load More button if we have at least reviewsPerPage reviews
+                if (allReviews.length >= reviewsPerPage) {
+                    loadMoreContainer.style.display = 'block';
+                }
             } catch (error) {
-                console.error('Error loading reviews:', error);
                 reviewsContainer.innerHTML = '<div class="text-center py-8 text-red-500">Failed to load reviews. Please try again.</div>';
+                loadMoreContainer.style.display = 'none';
             } finally {
                 // Re-enable the dropdown
                 viewSelect.disabled = false;
@@ -216,6 +373,21 @@
         franchiseSelect.addEventListener('change', applyFilters);
         ratingSelect.addEventListener('change', applyFilters);
         sortSelect.addEventListener('change', applyFilters);
+        
+        // Make sure the load more button has a single event listener
+        if (loadMoreButton) {
+            // Remove any existing event listeners first (just in case)
+            loadMoreButton.replaceWith(loadMoreButton.cloneNode(true));
+            
+            // Get the fresh reference
+            const freshLoadMoreButton = document.getElementById('load-more-button');
+            
+            // Add the event listener
+            freshLoadMoreButton.addEventListener('click', function(event) {
+                event.preventDefault();
+                loadMoreReviews();
+            });
+        }
 
         // Initialize the view
         loadReviews();
