@@ -54,33 +54,34 @@ def send_request(user_id):
             status = 'pending'
         )
 
+
         db.session.add(new_friend)
         db.session.commit()
 
     return redirect(url_for('main.explore'))
 
-@friend_bp.route('/friends/accept/<int:user_id>', methods=['POST'])
+@friend_bp.route('accept/<int:user_id>', methods=['POST'])
 @login_required
-def accept_request(user_id):
-    """Accept a friend request"""
-    user = User.query.get_or_404(user_id)
-    is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
-    
-    if current_user.accept_friend_request(user):
-        db.session.commit()
-        message = f'You are now friends with {user.username}!'
-        if is_ajax:
-            return jsonify({'status': 'success', 'message': message})
-        flash(message, 'success')
+def accept_friend(user_id):
+    sender = User.query.get_or_404(user_id)
+
+    if not sender:
+        return jsonify({"error": "User not found"}), 404
+
+    pending_request = Friendship.query.filter(
+        (Friendship.user1_id == sender.id) &
+        (Friendship.user2_id == current_user.id) &
+        (Friendship.status == 'pending')
+    ).first()  # Use .first() to get a single result
+
+    if pending_request:
+        # Update the status to 'accepted'
+        pending_request.status = 'accepted'
+        db.session.commit()  # Save the changes to the database
+        return jsonify({"message": "Friend request accepted"})
     else:
-        message = 'No pending request found.'
-        if is_ajax:
-            return jsonify({'status': 'error', 'message': message}), 400
-        flash(message, 'error')
-    
-    if is_ajax:
-        return jsonify({'status': 'error', 'message': 'Unknown error'}), 400
-    return redirect(url_for('friends.friends_list'))
+        return jsonify({"error": "No pending request found"}), 400
+
 
 @friend_bp.route('/friends/reject/<int:user_id>', methods=['POST'])
 @login_required

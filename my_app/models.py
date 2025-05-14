@@ -76,23 +76,6 @@ class User(UserMixin, db.Model):
         ).all()
 
         return bool(friendship)
-    
-    #changes 'pending' line in table to 'accept'
-    def accept_friend_request(self, user):
-        # Find the pending friendship request between user1 and user2
-        pending_request = Friendship.query.filter(
-            (Friendship.user1_id == user.id) &
-            (Friendship.user2_id == self.id) &
-            (Friendship.status == 'pending')
-        ).first()  # Use .first() to get a single result
-
-        if pending_request:
-            # Update the status to 'accepted'
-            pending_request.status = 'accepted'
-            db.session.commit()  # Save the changes to the database
-            return True  # Successfully accepted the request
-
-        return False  # No pending request found
 
 class Review(db.Model):
     __tablename__ = 'reviews'

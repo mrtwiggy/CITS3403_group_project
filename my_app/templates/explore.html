@@ -215,7 +215,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 const response = await fetch(`/friends/request/${userId}`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest' // if your server expects it
                     }
                 });
 
