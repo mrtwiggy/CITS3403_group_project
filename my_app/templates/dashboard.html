@@ -330,6 +330,72 @@
         }, 3000);
     }
 
+    // Helper function to remove notification item
+    function removeNotificationItem(buttonElement) {
+        const notificationItem = buttonElement.closest('.notification-item');
+        if (notificationItem) {
+            notificationItem.remove();
+        }
+        // Check if notifications container is empty
+        const notificationsContainer = document.getElementById('notifications-container');
+        if (notificationsContainer.children.length === 0) {
+            notificationsContainer.innerHTML = '<div class="text-center py-6 text-gray-500">No new notifications</div>';
+        }
+    }
+
+    // Helper function to add friend to friends list
+    function addFriendToModal(friend) {
+        const friendsList = document.getElementById('friends-list');
+        const noFriendsMessage = friendsList.querySelector('.text-center.py-4.text-gray-500');
+        if (noFriendsMessage) {
+            noFriendsMessage.remove();
+        }
+
+        const friendElement = document.createElement('div');
+        friendElement.className = 'flex items-center justify-between p-3 bg-gray-50 rounded-lg';
+        friendElement.setAttribute('data-friend-id', friend.id);
+        friendElement.innerHTML = `
+            <div class="flex items-center space-x-3">
+                <img src="/static/profile_pics/${friend.profile_pic}" 
+                     alt="${friend.username}" 
+                     class="w-10 h-10 rounded-full">
+                <div>
+                    <h4 class="font-medium">@${friend.username}</h4>
+                    <p class="text-sm text-gray-500">${friend.reviews_count} reviews</p>
+                </div>
+            </div>
+            <button class="remove-btn bg-pink-500 text-white px-3 py-1 rounded-md text-sm hover:bg-pink-600 transition"
+                    data-userid="${friend.id}"
+                    data-action="remove">
+                remove
+            </button>
+        `;
+        friendsList.appendChild(friendElement);
+        const newRemoveButton = friendElement.querySelector('.remove-btn');
+        if (newRemoveButton) {
+            console.log("[addFriendToModal] Attaching handleRemoveFriend to new button:", newRemoveButton, "for friend ID:", friend.id);
+            newRemoveButton.addEventListener('click', handleRemoveFriend);
+        } else {
+            console.error("[addFriendToModal] Could not find .remove-btn on new friend element for ID:", friend.id);
+        }
+    }
+
+    // Helper function to remove friend from friends list
+    function removeFriendFromModal(userId) {
+        console.log("[removeFriendFromModal] Attempting to remove friend with userId:", userId);
+        const friendsList = document.getElementById('friends-list');
+        const friendElement = friendsList.querySelector(`div[data-friend-id="${userId}"]`);
+        if (friendElement) {
+            console.log("[removeFriendFromModal] Found friend element to remove:", friendElement);
+            friendElement.remove();
+        } else {
+            console.error("[removeFriendFromModal] Friend element NOT found for userId:", userId);
+        }
+        if (friendsList.children.length === 0) {
+            friendsList.innerHTML = '<div class="text-center py-4 text-gray-500">No friends yet. Start exploring to find friends!</div>';
+        }
+    }
+
     // Friends Modal Functions
     function openFriendsModal() {
         document.getElementById('friendsModal').classList.remove('hidden');
@@ -356,23 +422,66 @@
             const friends = document.querySelectorAll('#friends-list > div');
             
             friends.forEach(friend => {
-                const username = friend.querySelector('h4')?.textContent.toLowerCase();
+                const usernameEl = friend.querySelector('h4'); // Ensure h4 exists
+                const username = usernameEl ? usernameEl.textContent.toLowerCase() : '';
                 if (username && username.includes(searchText)) {
                     friend.style.display = '';
-                } else {
+                } else if (friend.style.display !== 'none') { // Only hide if not already hidden
                     friend.style.display = 'none';
                 }
             });
         });
 
         // Friend removal functionality
-        function removeFriend(username) {
+        async function handleRemoveFriend(event) {
+            const button = event.currentTarget;
+            console.log("[handleRemoveFriend] Triggered for button:", button, "with dataset:", button.dataset);
+            const userId = parseInt(button.dataset.userid, 10);
+            console.log("[handleRemoveFriend] Parsed userId:", userId);
+
+            if (isNaN(userId)) {
+                console.error("[handleRemoveFriend] Invalid userId:", button.dataset.userid);
+                showNotification('Error: Could not identify friend to remove due to invalid ID.', 'error');
+                return;
+            }
+            
+            const friendEntryDiv = button.parentElement;
+            if (!friendEntryDiv) {
+                console.error("[handleRemoveFriend] Could not find parent friend entry div for remove button:", button);
+                showNotification('Error: Could not identify friend entry to remove (no parent).', 'error');
+                return;
+            }
+
+            const usernameElement = friendEntryDiv.querySelector('h4');
+            const username = usernameElement ? usernameElement.textContent.substring(1) : "this friend";
+            console.log("[handleRemoveFriend] Confirming removal for username:", username);
+
             if (confirm(`Are you sure you want to remove @${username} from your friends?`)) {
-                // TODO: Implement friend removal in backend
-                console.log('Removing friend:', username);
-                // Remove the friend entry from the list
-                const friendEntry = event.target.closest('.flex.items-center.justify-between');
-                friendEntry.remove();
+                console.log("[handleRemoveFriend] User confirmed removal for userId:", userId);
+                try {
+                    const response = await fetch(`/friends/remove/${userId}`, {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        console.log("[handleRemoveFriend] Successfully removed friend via API for userId:", userId);
+                        removeFriendFromModal(userId);
+                        showNotification(`@${username} has been removed from your friends.`, 'success');
+                    } else {
+                        const errorData = await response.json().catch(() => ({}));
+                        console.error("[handleRemoveFriend] API failed to remove friend for userId:", userId, response.status, errorData);
+                        showNotification(`Failed to remove @${username}. ` + (errorData.error || 'Please try again.'), 'error');
+                    }
+                } catch (error) {
+                    console.error("[handleRemoveFriend] JS error during fetch/remove for userId:", userId, error);
+                    showNotification(`Error removing @${username}. Please try again.`, 'error');
+                }
+            } else {
+                console.log("[handleRemoveFriend] User cancelled removal for userId:", userId);
             }
         }
 
@@ -465,13 +574,16 @@
 
         // Weekly Activity Chart
         const weeklyActivityCtx = document.getElementById('weeklyActivityChart').getContext('2d');
+        const weeklyLabels = {{ weekly_labels|tojson }};
+        const weeklyData = {{ weekly_data|tojson }};
+
         const weeklyActivityChart = new Chart(weeklyActivityCtx, {
             type: 'bar',
             data: {
-                labels: {{ weekly_labels|tojson }},
+                labels: weeklyLabels,
                 datasets: [{
                     label: 'Boba Reviews',
-                    data: {{ weekly_data|tojson }},
+                    data: weeklyData,
                     backgroundColor: 'rgba(219, 39, 119, 0.5)',
                     borderColor: 'rgb(219, 39, 119)',
                     borderWidth: 1
@@ -497,12 +609,15 @@
 
         // Franchise Distribution Chart
         const franchiseDistributionCtx = document.getElementById('franchiseDistributionChart').getContext('2d');
+        const franchiseLabels = {{ franchise_labels|tojson }};
+        const franchiseData = {{ franchise_data|tojson }};
+
         const franchiseDistributionChart = new Chart(franchiseDistributionCtx, {
             type: 'pie',
             data: {
-                labels: {{ franchise_labels|tojson }},
+                labels: franchiseLabels,
                 datasets: [{
-                    data: {{ franchise_data|tojson }},
+                    data: franchiseData,
                     backgroundColor: [
                         'rgba(219, 39, 119, 0.5)',
                         'rgba(59, 130, 246, 0.5)',
@@ -537,19 +652,14 @@
         const acceptButtons = document.querySelectorAll('.accept-btn');
         
         acceptButtons.forEach(button => {
-            console.log(typeof(button.dataset.userid));
-            
             button.addEventListener('click', async (event) => {
-                // Prevent default form submission if this is in a form
                 event.preventDefault();
-                
-                const userId = parseInt(button.dataset.userid, 10);
-                const action = button.dataset.action;
-                
-                console.log(`Button clicked! UserID: ${userId}, Action: ${action}`);
+                const currentButton = event.currentTarget;
+                const userId = parseInt(currentButton.dataset.userid, 10);
+                let response; // Define response here to check its status in the outer catch
                 
                 try {
-                    const response = await fetch(`/friends/${action}/${(userId)}`, {
+                    response = await fetch(`/friends/accept/${userId}`, { // Assign to the higher-scoped response
                         method: 'POST',
                         headers: {
                             'X-Requested-With': 'XMLHttpRequest',
@@ -557,18 +667,59 @@
                         }
                     });
 
+                    let data;
                     if (response.ok) {
-                        // Successfully processed the request
-                        button.textContent = "Accepted";
-                        button.disabled = true;
-                        console.log("Friend request accepted successfully");
+                        try {
+                            data = await response.json();
+                            console.log("[AcceptFriend] Successfully parsed JSON response:", data);
+                        } catch (parseError) {
+                            console.error("[AcceptFriend] JSON parsing error despite response.ok:", parseError, "Response body text:", await response.text().catch(() => 'Could not get response text'));
+                            showNotification('Friend request processed. UI may need a refresh to show new friend.', 'success');
+                            removeNotificationItem(currentButton);
+                            const notificationItemOnError = currentButton.closest('.notification-item');
+                            if (notificationItemOnError) {
+                                notificationItemOnError.querySelectorAll('button').forEach(btn => btn.disabled = true);
+                                currentButton.textContent = "Processed";
+                                const rejectBtn = notificationItemOnError.querySelector('.reject-btn');
+                                if(rejectBtn) rejectBtn.classList.add('hidden');
+                            }
+                            return;
+                        }
+
+                        removeNotificationItem(currentButton);
+
+                        if (data && data.friend && data.friend.username) {
+                            addFriendToModal(data.friend);
+                            showNotification(`Friend request accepted from @${data.friend.username}!`, 'success');
+                        } else {
+                            console.error("[AcceptFriend] Friend data missing or incomplete in successfully parsed response:", data);
+                            showNotification('Friend request accepted! Refresh to see full update if needed.', 'success');
+                        }
+                        
+                        const notificationItem = currentButton.closest('.notification-item');
+                        if (notificationItem) {
+                            notificationItem.querySelectorAll('button').forEach(btn => btn.disabled = true);
+                            currentButton.textContent = "Accepted";
+                            const rejectBtn = notificationItem.querySelector('.reject-btn');
+                            if(rejectBtn) rejectBtn.classList.add('hidden');
+                        }
                     } else {
-                        // Server returned an error
-                        const errorData = await response.json().catch(() => ({}));
-                        console.error("Failed to accept friend request:", response.status, errorData);
+                        const errorData = await response.json().catch(() => ({ error: "Server error without JSON response" }));
+                        console.error("[AcceptFriend] API failed to accept friend request:", response.status, errorData);
+                        showNotification('Failed to accept friend request. ' + (errorData.error || 'Please try again.'), 'error');
                     }
                 } catch (error) {
-                    console.error("Error accepting friend request:", error);
+                    console.error("[AcceptFriend] Outer catch error processing friend request:", error, "for userId:", userId);
+                    // If 'response' is defined and response.ok was true, it means the server confirmed success,
+                    // but a JS error happened in the success handling code block.
+                    if (response && response.ok) {
+                        // The server operation was successful, but a client-side JS error occurred during UI update.
+                        // Log it, but do not show an "error" popup to the user, as requested.
+                        console.warn("[AcceptFriend] Client-side error after successful server response. Error popup suppressed as per request.");
+                    } else {
+                        // This is a genuine fetch error or the server returned an error status. Show an error.
+                        showNotification('Error processing friend request. Please check console and try again.', 'error');
+                    }
                 }
             });
         });
@@ -576,20 +727,17 @@
         const rejectButtons = document.querySelectorAll('.reject-btn');
 
         rejectButtons.forEach(button => {
-            console.log(typeof(button.dataset.userid));
-            
             button.addEventListener('click', async (event) => {
-                // Prevent default form submission if this is in a form
                 event.preventDefault();
+                const currentButton = event.currentTarget;
+                const userId = parseInt(currentButton.dataset.userid, 10);
                 
-                const userId = parseInt(button.dataset.userid, 10);
-                console.log(typeof(userId))
-                const action = button.dataset.action;
-                
-                console.log(`Button clicked! UserID: ${userId}, Action: ${action}`);
-                
+                const usernameElement = currentButton.closest('.notification-item')?.querySelector('.font-semibold');
+                const username = usernameElement ? usernameElement.textContent.substring(1) : "this user";
+
+
                 try {
-                    const response = await fetch(`/friends/reject/${(userId)}`, {
+                    const response = await fetch(`/friends/reject/${userId}`, {
                         method: 'POST',
                         headers: {
                             'X-Requested-With': 'XMLHttpRequest',
@@ -598,59 +746,30 @@
                     });
 
                     if (response.ok) {
-                        // Successfully processed the request
-                        button.textContent = "Rejected";
-                        button.disabled = true;
-                        console.log("Friend request rejected");
+                        removeNotificationItem(currentButton);
+                        showNotification(`Friend request from @${username} rejected.`, 'success');
+                        const notificationItem = currentButton.closest('.notification-item');
+                        if (notificationItem) {
+                             notificationItem.querySelectorAll('button').forEach(btn => btn.disabled = true);
+                            currentButton.textContent = "Rejected";
+                            const acceptBtn = notificationItem.querySelector('.accept-btn');
+                            if(acceptBtn) acceptBtn.classList.add('hidden');
+                        }
                     } else {
-                        // Server returned an error
-                        const errorData = await response.json().catch(() => ({}));
+                        const errorData = await response.json().catch(() => ({ error: "Unknown server error" }));
                         console.error("Failed to reject friend request:", response.status, errorData);
+                        showNotification('Failed to reject friend request. ' + (errorData.error || 'Please try again.'), 'error');
                     }
                 } catch (error) {
                     console.error("Error rejecting friend request:", error);
+                    showNotification('Error processing friend rejection. Please try again.', 'error');
                 }
             });
         });
 
         const removeButtons = document.querySelectorAll('.remove-btn');
-
         removeButtons.forEach(button => {
-            console.log(typeof(button.dataset.userid));
-            
-            button.addEventListener('click', async (event) => {
-                // Prevent default form submission if this is in a form
-                event.preventDefault();
-                
-                const userId = parseInt(button.dataset.userid, 10);
-                console.log(typeof(userId))
-                const action = button.dataset.action;
-                
-                console.log(`Button clicked! UserID: ${userId}, Action: ${action}`);
-                
-                try {
-                    const response = await fetch(`/friends/${action}/${(userId)}`, {
-                        method: 'POST',
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'Content-Type': 'application/json'
-                        }
-                    });
-
-                    if (response.ok) {
-                        // Successfully processed the request
-                        button.textContent = "Removed";
-                        button.disabled = true;
-                        console.log("Friend removed");
-                    } else {
-                        // Server returned an error
-                        const errorData = await response.json().catch(() => ({}));
-                        console.error("Failed to remove friend", response.status, errorData);
-                    }
-                } catch (error) {
-                    console.error("Error removing friend request:", error);
-                }
-            });
+            button.addEventListener('click', handleRemoveFriend);
         });
     });
 </script>

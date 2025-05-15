@@ -78,7 +78,16 @@ def accept_friend(user_id):
         # Update the status to 'accepted'
         pending_request.status = 'accepted'
         db.session.commit()  # Save the changes to the database
-        return jsonify({"message": "Friend request accepted"})
+        # Return friend's details for dynamic UI update
+        return jsonify({
+            "message": "Friend request accepted",
+            "friend": {
+                "id": sender.id,
+                "username": sender.username,
+                "profile_pic": sender.profile_pic,
+                 "reviews_count": len(sender.reviews.all())
+            }
+        })
     else:
         return jsonify({"error": "No pending request found"}), 400
 
