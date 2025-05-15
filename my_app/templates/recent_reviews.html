@@ -134,9 +134,17 @@
             const locationText = review.location && review.location.name 
                 ? `${review.franchise.name} • ${review.location.name}`
                 : review.franchise.name;
+            
+            // Determine if the review is by the current user for highlighting
+            const isCurrentUserReview = review.is_current_user; // Directly use the flag from the API
+            const cardClasses = [
+                'bg-white', 'p-6', 'rounded-lg', 'shadow-md', 'review-card',
+                review.is_private ? 'border-l-4 border-blue-400' : '', // Existing private highlight, changed to blue for distinction
+                isCurrentUserReview ? 'bg-pink-50' : '' // Light pink for current user's review
+            ].filter(Boolean).join(' '); // filter(Boolean) removes empty strings from is_private or is_current_user if false
 
             return `
-                <div class="bg-white p-6 rounded-lg shadow-md review-card ${review.is_private ? 'border-l-4 border-pink-400' : ''}" data-franchise="${review.franchise.name}" data-rating="${review.rating}">
+                <div class="${cardClasses}" data-franchise="${review.franchise.name}" data-rating="${review.rating}">
                     <div class="flex justify-between items-start mb-4">
                         <div class="flex items-center space-x-3">
                             <img src="{{ url_for('static', filename='profile_pics/') }}${review.user.profile_pic}"
@@ -206,22 +214,8 @@
             
             if (reviewsToShow.length > 0) {
                 reviewsContainer.innerHTML = reviewsToShow.map(renderReview).join('');
-                
-                // Show/hide load more button
-                if (filteredReviews.length > endIndex) {
-                    loadMoreContainer.style.display = 'block';
-                } else {
-                    // Don't hide the button if we have exactly reviewsPerPage reviews
-                    // This allows users to try loading more even if we're not sure there are more
-                    if (filteredReviews.length >= reviewsPerPage && currentPage === 1) {
-                        loadMoreContainer.style.display = 'block';
-                    } else {
-                        loadMoreContainer.style.display = 'none';
-                    }
-                }
             } else {
                 reviewsContainer.innerHTML = '<div class="text-center py-8 text-gray-500">No reviews found matching your filters.</div>';
-                loadMoreContainer.style.display = 'none';
             }
         }
 
@@ -253,9 +247,19 @@
                         newReviews.forEach(review => {
                             // Create the review element
                             const reviewElement = document.createElement('div');
-                            reviewElement.className = 'bg-white p-6 rounded-lg shadow-md review-card';
+                            
+                            // Determine classes for highlighting
+                            const isCurrentUserReview = review.is_current_user;
+                            const cardDynamicClasses = [
+                                'bg-white', 'p-6', 'rounded-lg', 'shadow-md', 'review-card',
+                                review.is_private ? 'border-l-4 border-blue-400' : '',
+                                isCurrentUserReview ? 'bg-pink-50' : ''
+                            ].filter(Boolean).join(' ');
+                            reviewElement.className = cardDynamicClasses;
+
                             if (review.is_private) {
-                                reviewElement.classList.add('border-l-4', 'border-pink-400');
+                                // This specific border styling is now handled by cardDynamicClasses
+                                // reviewElement.classList.add('border-l-4', 'border-pink-400'); 
                             }
                             reviewElement.setAttribute('data-franchise', review.franchise.name);
                             reviewElement.setAttribute('data-rating', review.rating);
@@ -304,9 +308,11 @@
                         // Add the new reviews to our collection for filtering
                         allReviews = allReviews.concat(newReviews);
                         
-                        // Hide button if no more reviews
+                        // UPDATED Load More Button visibility logic
                         if (newReviews.length < reviewsPerPage) {
                             loadMoreContainer.style.display = 'none';
+                        } else {
+                            loadMoreContainer.style.display = 'block'; // Show if a full page was fetched
                         }
                     } else {
                         // No more reviews to load
@@ -329,9 +335,7 @@
         // Function to load reviews
         async function loadReviews() {
             reviewsContainer.innerHTML = '<div class="text-center py-8 text-gray-500">Loading reviews...</div>';
-            
-            // Always hide the button while loading
-            loadMoreContainer.style.display = 'none'; 
+            loadMoreContainer.style.display = 'none'; // Initially hide while loading
             
             // Update the UI to show which view is active
             const viewType = viewSelect.value;
@@ -350,12 +354,13 @@
                 allReviews = await response.json();
                 currentPage = 1;
                 
-                // Apply filters and render reviews
-                applyFilters();
+                applyFilters(); // This calls renderReviews which now does not affect the button
                 
-                // Show the Load More button if we have at least reviewsPerPage reviews
-                if (allReviews.length >= reviewsPerPage) {
+                // UPDATED Load More Button visibility logic for initial load
+                if (allReviews.length === reviewsPerPage) {
                     loadMoreContainer.style.display = 'block';
+                } else {
+                    loadMoreContainer.style.display = 'none';
                 }
             } catch (error) {
                 reviewsContainer.innerHTML = '<div class="text-center py-8 text-red-500">Failed to load reviews. Please try again.</div>';
