@@ -136,8 +136,8 @@
                     <h2 class="text-2xl font-bold mb-6">Recent Activity</h2>
                     
                     {% if current_user.reviews %}
-                        <div class="space-y-6">
-                            {% for review in current_user.reviews[:5] %}
+                        <div class="space-y-6" id="dashboard-reviews-container">
+                            {% for review in current_user.reviews[:3] %}
                                 <div class="border-b border-gray-200 pb-6 last:border-0 last:pb-0">
                                     <div class="flex items-center justify-between mb-2">
                                         <div>
@@ -155,6 +155,15 @@
                                 </div>
                             {% endfor %}
                         </div>
+                        
+                        <!-- Load More Button -->
+                        {% if current_user.reviews.all()|length > 3 %}
+                        <div class="mt-6 text-center" id="dashboard-load-more-container">
+                            <button id="dashboard-load-more-button" class="bg-pink-400 text-white py-2 px-6 rounded-full hover:bg-pink-500 transition duration-300">
+                                Load More Reviews
+                            </button>
+                        </div>
+                        {% endif %}
                     {% else %}
                         <div class="text-center py-8">
                             <p class="text-gray-600">No reviews yet. Start exploring boba shops!</p>
@@ -339,34 +348,121 @@
         }
     });
 
-    // Friends search functionality
-    document.getElementById('friend-search').addEventListener('input', function(e) {
-        const searchText = e.target.value.toLowerCase();
-        const friends = document.querySelectorAll('#friends-list > div');
-        
-        friends.forEach(friend => {
-            const username = friend.querySelector('h4')?.textContent.toLowerCase();
-            if (username && username.includes(searchText)) {
-                friend.style.display = '';
-            } else {
-                friend.style.display = 'none';
-            }
-        });
-    });
-
-    // Friend removal functionality
-    function removeFriend(username) {
-        if (confirm(`Are you sure you want to remove @${username} from your friends?`)) {
-            // TODO: Implement friend removal in backend
-            console.log('Removing friend:', username);
-            // Remove the friend entry from the list
-            const friendEntry = event.target.closest('.flex.items-center.justify-between');
-            friendEntry.remove();
-        }
-    }
-
-    // Chart initialization
+    // Document Ready Event Handler
     document.addEventListener('DOMContentLoaded', function() {
+        // Friends search functionality
+        document.getElementById('friend-search').addEventListener('input', function(e) {
+            const searchText = e.target.value.toLowerCase();
+            const friends = document.querySelectorAll('#friends-list > div');
+            
+            friends.forEach(friend => {
+                const username = friend.querySelector('h4')?.textContent.toLowerCase();
+                if (username && username.includes(searchText)) {
+                    friend.style.display = '';
+                } else {
+                    friend.style.display = 'none';
+                }
+            });
+        });
+
+        // Friend removal functionality
+        function removeFriend(username) {
+            if (confirm(`Are you sure you want to remove @${username} from your friends?`)) {
+                // TODO: Implement friend removal in backend
+                console.log('Removing friend:', username);
+                // Remove the friend entry from the list
+                const friendEntry = event.target.closest('.flex.items-center.justify-between');
+                friendEntry.remove();
+            }
+        }
+
+        // Dashboard Reviews Pagination
+        const loadMoreButton = document.getElementById('dashboard-load-more-button');
+        if (loadMoreButton) {
+            let currentPage = 1;
+            const reviewsPerPage = 3;
+            
+            loadMoreButton.addEventListener('click', function() {
+                // Show loading state
+                loadMoreButton.textContent = 'Loading...';
+                loadMoreButton.disabled = true;
+                
+                // Increment page
+                currentPage++;
+                
+                // Fetch more reviews
+                fetch(`/api/get_user_reviews?page=${currentPage}&per_page=${reviewsPerPage}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Failed to load more reviews');
+                        }
+                        return response.json();
+                    })
+                    .then(moreReviews => {
+                        if (moreReviews.length > 0) {
+                            const reviewsContainer = document.getElementById('dashboard-reviews-container');
+                            
+                            // Process each new review
+                            moreReviews.forEach(review => {
+                                // Create the review element
+                                const reviewElement = document.createElement('div');
+                                reviewElement.className = 'border-b border-gray-200 pb-6 last:border-0 last:pb-0';
+                                
+                                // Format date
+                                const formattedDate = new Date(review.uploaded_at).toLocaleDateString('en-US', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric'
+                                });
+                                
+                                // Generate rating display
+                                const bobaRating = '🟤'.repeat(review.rating);
+                                
+                                // Get location text
+                                const locationText = review.location && review.location.name ? 
+                                    review.franchise.name + ' • ' + review.location.name : 
+                                    review.franchise.name;
+                                
+                                // Build HTML content
+                                reviewElement.innerHTML = 
+                                    '<div class="flex items-center justify-between mb-2">' +
+                                        '<div>' +
+                                            '<h3 class="text-lg font-semibold">' + review.drink_name + '</h3>' +
+                                            '<p class="text-sm text-gray-600">' + locationText + '</p>' +
+                                        '</div>' +
+                                        '<div class="text-3xl">' + bobaRating + '</div>' +
+                                    '</div>' +
+                                    '<p class="text-gray-600 mb-2">' + review.review_content + '</p>' +
+                                    '<div class="text-sm text-gray-500">' + formattedDate + '</div>';
+                                
+                                // Add to container
+                                reviewsContainer.appendChild(reviewElement);
+                            });
+                            
+                            // Hide button if no more reviews
+                            if (moreReviews.length < reviewsPerPage) {
+                                document.getElementById('dashboard-load-more-container').style.display = 'none';
+                            }
+                        } else {
+                            // No more reviews to load
+                            document.getElementById('dashboard-load-more-container').style.display = 'none';
+                        }
+                        
+                        // Reset button state
+                        loadMoreButton.textContent = 'Load More Reviews';
+                        loadMoreButton.disabled = false;
+                    })
+                    .catch(error => {
+                        console.error('Error loading more reviews:', error);
+                        loadMoreButton.textContent = 'Error loading reviews';
+                        setTimeout(() => {
+                            loadMoreButton.textContent = 'Load More Reviews';
+                            loadMoreButton.disabled = false;
+                        }, 2000);
+                    });
+            });
+        }
+
         // Weekly Activity Chart
         const weeklyActivityCtx = document.getElementById('weeklyActivityChart').getContext('2d');
         const weeklyActivityChart = new Chart(weeklyActivityCtx, {
@@ -556,8 +652,6 @@
                 }
             });
         });
-
-
     });
 </script>
 {% endblock %}

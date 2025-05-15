@@ -128,7 +128,8 @@ def recent_reviews():
 @main_bp.route('/api/get_reviews')
 @login_required
 def get_reviews():
-    limit = request.args.get('limit', type=int)
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 5, type=int)
     show_friends = request.args.get('friends', 'false') == 'true'
     
     # Base query for reviews with proper joins
@@ -156,14 +157,12 @@ def get_reviews():
             )
         )
     
-    # Order by most recent and limit if specified
-    reviews = base_query.order_by(Review.uploaded_at.desc())
-    if limit:
-        reviews = reviews.limit(limit)
-    else:
-        reviews = reviews.limit(50)
+    # Order by most recent
+    base_query = base_query.order_by(Review.uploaded_at.desc())
     
-    reviews = reviews.all()
+    # Apply pagination
+    offset = (page - 1) * per_page
+    reviews = base_query.offset(offset).limit(per_page).all()
     
     # Format reviews
     results = []
@@ -353,6 +352,47 @@ def get_active_users():
             'username': user.username,
             'profile_pic': user.profile_pic,
             'review_count': review_count
+        })
+    
+    return jsonify(results)
+
+@main_bp.route('/api/get_user_reviews')
+@login_required
+def get_user_reviews():
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 3, type=int)
+    
+    # Calculate offset based on page and per_page
+    offset = (page - 1) * per_page
+    
+    # Get paginated reviews for current user
+    reviews = db.session.query(Review).join(
+        Franchise, Review.franchise_id == Franchise.id, isouter=True
+    ).join(
+        Location, Review.location_id == Location.id, isouter=True
+    ).filter(
+        Review.user_id == current_user.id
+    ).order_by(
+        Review.uploaded_at.desc()
+    ).offset(offset).limit(per_page).all()
+    
+    # Format reviews
+    results = []
+    for review in reviews:
+        results.append({
+            'id': review.id,
+            'franchise': {
+                'id': review.franchise.id if review.franchise else None,
+                'name': review.franchise.name if review.franchise else 'Unknown'
+            },
+            'location': {
+                'id': review.location.id if review.location else None,
+                'name': review.location.name if review.location else None
+            },
+            'drink_name': review.drink_name,
+            'review_content': review.review_content,
+            'rating': review.review_rating,
+            'uploaded_at': review.uploaded_at.isoformat()
         })
     
     return jsonify(results)
