@@ -10,7 +10,10 @@ db = SQLAlchemy()
 login_manager = LoginManager()
 
 def create_app(config_class=None):
-    app = Flask(__name__)
+    app = Flask(__name__, instance_relative_config=True)
+    
+    # Ensure instance path exists
+    os.makedirs(app.instance_path, exist_ok=True)
     
     # Load config from Python class
     if config_class:
