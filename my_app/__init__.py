@@ -2,24 +2,22 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
-import yaml
+import os
 
 # Create extensions outside of create_app
 db = SQLAlchemy()
 login_manager = LoginManager()
 
-def create_app(config_file=None):
+def create_app(config_class=None):
     app = Flask(__name__)
     
-    # Load config
-    if config_file:
-        app.config.from_file(config_file, load=yaml.safe_load)
+    # Load config from Python class
+    if config_class:
+        app.config.from_object(config_class)
     else:
-        # Default config
-        app.config['SECRET_KEY'] = 'your-secret-key'
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///bobaboard.db'
-        app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-        
+        # Default to DeploymentConfig if no config class is specified
+        from config import DeploymentConfig
+        app.config.from_object(DeploymentConfig)
     
     # Initialize extensions with app
     db.init_app(app)

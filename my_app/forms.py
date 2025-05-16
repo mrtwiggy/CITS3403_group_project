@@ -17,7 +17,7 @@ class SignupForm(FlaskForm):
     submit = SubmitField('Sign Up')
 
 # Form definition
-class ReviewForm(FlaskForm):
+class ReviewForm(FlaskForm): 
     franchise_id = SelectField('Franchise', validators=[DataRequired()], 
                               coerce=int)
     
