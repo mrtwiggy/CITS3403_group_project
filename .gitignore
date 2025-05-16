@@ -1,6 +1,4 @@
 venv
 __pycache__
 .env
-instance/bobaboard.db
-config.yml
-de_debug.py
+instance/
