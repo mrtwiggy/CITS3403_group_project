@@ -11,7 +11,7 @@ def friends_list():
     friends = current_user.get_all_friends()
     pending_sent = current_user.sent_friend_requests.filter_by(status='pending').all()
     pending_received = current_user.received_friend_requests.filter_by(status='pending').all()
-    
+
     return render_template('friends/list.html',
                          friends=friends,
                          pending_sent=pending_sent,
@@ -29,7 +29,7 @@ def search_users():
         ).all()
     else:
         users = []
-    
+
     return render_template('friends/search.html', users=users, query=query)
 
 @friend_bp.route('/request/<int:user_id>', methods=['POST'])
@@ -40,13 +40,13 @@ def send_request(user_id):
     if current_user.id == user.id:
         flash("You can't friend yourself.", "warning")
         return redirect(url_for('friends.friends_list'))
-    
+
     if current_user.has_friend_requests_pending(user):
         flash("Friend request already sent.", "warning")
-        
+
     elif current_user.is_friend_with(user):
         flash("You are already friends.", "warning")
-    
+
     else:
         new_friend = Friendship(
             user1_id = current_user.id,
@@ -83,49 +83,48 @@ def accept_friend(user_id):
         return jsonify({"error": "No pending request found"}), 400
 
 
-@friend_bp.route('/friends/reject/<int:user_id>', methods=['POST'])
+@friend_bp.route('/reject/<int:user_id>', methods=['POST'])
 @login_required
 def reject_request(user_id):
-    """Reject a friend request"""
-    user = User.query.get_or_404(user_id)
-    is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
-    
-    if current_user.reject_friend_request(user):
-        db.session.commit()
-        message = f'Friend request from {user.username} rejected.'
-        if is_ajax:
-            return jsonify({'status': 'success', 'message': message})
-        flash(message, 'info')
-    else:
-        message = 'No pending request found.'
-        if is_ajax:
-            return jsonify({'status': 'error', 'message': message}), 400
-        flash(message, 'error')
-    
-    if is_ajax:
-        return jsonify({'status': 'error', 'message': 'Unknown error'}), 400
-    return redirect(url_for('friends.friends_list'))
+    sender = User.query.get_or_404(user_id)
 
-@friend_bp.route('/friends/remove/<int:user_id>', methods=['POST'])
+    if not sender:
+        return jsonify({"error": "User not found"}), 404
+
+    pending_request = Friendship.query.filter(
+        (Friendship.user1_id == sender.id) &
+        (Friendship.user2_id == current_user.id) &
+        (Friendship.status == 'pending')
+    ).first()  # Use .first() to get a single result
+
+    if pending_request:
+        # Update the status to 'accepted'
+        db.session.delete(pending_request)
+        db.session.commit()  # Save the changes to the database
+        return jsonify({"message": "Friend request rejected"})
+    else:
+        return jsonify({"error": "No pending request found"}), 400
+
+@friend_bp.route('/remove/<int:user_id>', methods=['POST'])
 @login_required
 def remove_friend(user_id):
     """Remove a friend"""
-    user = User.query.get_or_404(user_id)
-    is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
-    
-    if current_user.is_friend_with(user):
-        current_user.remove_friend(user)
-        db.session.commit()
-        message = f'Removed {user.username} from friends.'
-        if is_ajax:
-            return jsonify({'status': 'success', 'message': message})
-        flash(message, 'info')
+    sender = User.query.get_or_404(user_id)
+
+    if not sender:
+        return jsonify({"error": "User not found"}), 404
+
+    pending_request = Friendship.query.filter(
+        (((Friendship.user1_id == sender.id) & (Friendship.user2_id == current_user.id)) |
+        ((Friendship.user1_id == current_user.id) & (Friendship.user2_id == sender.id))) &
+        (Friendship.status == 'accepted')
+    ).first()  # Use .first() to get a single result
+
+    if pending_request:
+        # Update the status to 'accepted'
+        db.session.delete(pending_request)
+        db.session.commit()  # Save the changes to the database
+        return jsonify({"message": "Friend relation removed"})
     else:
-        message = 'You are not friends with this user.'
-        if is_ajax:
-            return jsonify({'status': 'error', 'message': message}), 400
-        flash(message, 'error')
-    
-    if is_ajax:
-        return jsonify({'status': 'error', 'message': 'Unknown error'}), 400
-    return redirect(url_for('friends.friends_list'))
+        return jsonify({"error": "No pending request found"}), 400
+
