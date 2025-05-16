@@ -20,6 +20,7 @@
         {% endwith %}
         
         <form method="POST" class="space-y-4">
+            {{form.csrf_token}}
             {{ form.hidden_tag() }}
             <div>
                 {{ form.email(class="w-full p-2 border rounded", placeholder="Email") }}
