@@ -2,6 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
+from flask_wtf.csrf import CSRFProtect
 import os
 
 # Create extensions outside of create_app
@@ -19,6 +20,8 @@ def create_app(config_class=None):
         from config import DeploymentConfig
         app.config.from_object(DeploymentConfig)
     
+
+    csrf = CSRFProtect(app)
     # Initialize extensions with app
     db.init_app(app)
     login_manager.init_app(app)

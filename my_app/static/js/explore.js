@@ -138,7 +138,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest' // if your server expects it
+                        'X-Requested-With': 'XMLHttpRequest', // if your server expects it
+                        'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     }
                 });
 
