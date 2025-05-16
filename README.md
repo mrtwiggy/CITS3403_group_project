@@ -33,9 +33,9 @@ You make an account and start reviewing drinks you've tried at various stores! T
 
 **Set up Instructions:**
 1. Create a .env file:
-   Note: you can choose to change your secret key to whatever value you would like.
+   - Note: you can choose to change your secret key to whatever value you would like.
    ```shell
-   python create.py
+   python create_env.py
    ```
 
 1. Create the environment:
@@ -61,7 +61,7 @@ You make an account and start reviewing drinks you've tried at various stores! T
    ```
 
 4. Launch the Flask application:
-   Note: if you want to change the port, set ```PORT = <your chosen port nunber>``` in config.py. Otherwise the default server port is set to 5000.
+   - Note: if you want to change the port, set ```PORT = <your chosen port nunber>``` in config.py. Otherwise the default server port is set to 5000.
    ```shell
    python app.py
    ```
@@ -73,7 +73,7 @@ You make an account and start reviewing drinks you've tried at various stores! T
 ## Testing:
 
 **How to run tests for BobaBoard:**
-In the project root directory:
+   In the project root directory:
 ```shell
 python test.py
 ```
