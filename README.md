@@ -78,10 +78,11 @@ You make an account and start reviewing drinks you've tried at various stores! T
 python test.py
 ```
 
-Basic instructions for Selenium are as such:
-Install Selenium (individually done due to difficulty in installation and variety of methods per operating system).
-Run instance.
-Run Python files in the folder /my_app/tests/selenium_tests. RUN CREATE USERS TESTS FIRST!
+**Basic instructions for Selenium are as such:**
+- Install Selenium (individually done due to difficulty in installation and variety of methods per operating system).
+- Run instance.
+- Run Python files in the folder /my_app/tests/selenium_tests. RUN CREATE USERS TESTS FIRST!
+
 ---
 
 
