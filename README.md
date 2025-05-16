@@ -33,16 +33,9 @@ You make an account and start reviewing drinks you've tried at various stores! T
 
 **Set up Instructions:**
 1. Create a .env file:
-   for wsl/linux/macOS:
+   Note: you can choose to change your secret key to whatever value you would like.
    ```shell
-   echo "SECRET_KEY='YOUR_FAVOURITE_BBT'"$'\n'"WTF_CSRF_SECRET_KEY='YOUR_SECOND_FAVOURITE_BBT'" > .env
-   ```
-   or for Windows powershell:
-   ```shell
-   @"
-   SECRET_KEY='YOUR_FAVOURITE_BBT'
-   WTF_CSRF_SECRET_KEY='YOUR_SECOND_FAVOURITE_BBT'
-   "@ | Out-File -Encoding UTF8 -FilePath .env
+   python create.py
    ```
 
 1. Create the environment:
@@ -68,24 +61,22 @@ You make an account and start reviewing drinks you've tried at various stores! T
    ```
 
 4. Launch the Flask application:
-   
+   Note: if you want to change the port, set ```PORT = <your chosen port nunber>``` in config.py. Otherwise the default server port is set to 5000.
    ```shell
-   flask run
+   python app.py
    ```
 
-   or for debug:
-   ```shell
-   flask run --debug
-   ```
-
-5. Go to `http://localhost:5000`.
+5. Go to `http://localhost:<your chosen port number or 5000>`.
 
 ---
 
-## Contributing
+## Testing:
 
 **How to run tests for BobaBoard:**
-
+In the project root directory:
+```shell
+python test.py
+```
 ---
 
 
