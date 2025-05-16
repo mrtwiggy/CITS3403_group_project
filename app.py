@@ -9,4 +9,5 @@ else:
     app = create_app(DeploymentConfig)
 
 if __name__ == "__main__":
-    app.run(debug=DeploymentConfig.DEBUG if 'DEBUG' in dir(DeploymentConfig) else False)
+    app.run(debug=DeploymentConfig.DEBUG if 'DEBUG' in dir(DeploymentConfig) else False,
+             port=DeploymentConfig.PORT if 'PORT' in dir(DeploymentConfig) else 5000)
