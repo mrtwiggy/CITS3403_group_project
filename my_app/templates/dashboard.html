@@ -210,6 +210,8 @@
 
             <!-- Save Button -->
             <form id="avatarForm" action="{{ url_for('main.update_profile_pic') }}" method="post" class="text-right">
+                <!-- CSRF token -->
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <input type="hidden" name="profile_pic" id="selectedAvatar" value="">
                 <button type="button" onclick="closeAvatarModal()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded mr-2 hover:bg-gray-300 transition">
                     Cancel
