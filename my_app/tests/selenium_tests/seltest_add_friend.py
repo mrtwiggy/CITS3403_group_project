@@ -49,9 +49,9 @@ try:
         time.sleep(2) # Wait for explore page to load.
 
         user_search_field = driver.find_element(By.ID, 'user-search')  # Adjust the selector as needed
-        user_search_field.send_keys('poopypants')
+        user_search_field.send_keys('testuser2')
 
-        time.sleep(2) # Delay to wait for search results to display.
+        time.sleep(5) # Delay to wait for search results to display.
 
         friendship_button = driver.find_element(By.CLASS_NAME, 'friendship-btn')  # Adjust the selector as needed
         friendship_button.click()
