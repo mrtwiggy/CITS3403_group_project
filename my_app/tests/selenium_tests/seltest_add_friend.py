@@ -7,45 +7,35 @@ import time
 driver = webdriver.Chrome()  # or webdriver.Firefox() for Firefox
 
 try:
-    # Navigate to the sign-up page
-    driver.get('http://localhost:5000/auth/signup')
+    # Navigate to the login page
+    driver.get('http://localhost:5000/auth/login')  # Updated URL
 
     # Wait for the page to load
-    time.sleep(2)
+    time.sleep(2)  # You can use WebDriverWait for a more robust solution
 
-    # Enter test sign-up details
+    # Enter login details
     try:
-        # Locate the username field and enter a username
-        username_field = driver.find_element(By.NAME, 'username')  # Adjust the selector as needed
-        username_field.send_keys('testuser1')
-
         # Locate the email field and enter an email
         email_field = driver.find_element(By.NAME, 'email')  # Adjust the selector as needed
         email_field.send_keys('testuser@example.com')
 
         # Locate the password field and enter a password
         password_field = driver.find_element(By.NAME, 'password')  # Adjust the selector as needed
-        password_field.send_keys('securepasswOrd123!')
-        
-        # Locate the password confirmation field and enter a password
-        password_field = driver.find_element(By.NAME, 'confirm_password')  # Adjust the selector as needed
-        password_field.send_keys('securepasswOrd123!')
+        password_field.send_keys('securepassword123')
 
-        # Locate and click the sign-up button with the name "submit"
+        # Locate and click the login button with the name "submit"
         submit_button = driver.find_element(By.NAME, 'submit')  # Adjust the selector as needed
         submit_button.click()
 
-        time.sleep(5) # Wait for user creation confirmation prompt.
-
-        print("Sign-up details entered and submitted successfully.")
-
+        print("Login details entered and submitted successfully.")
+        
     except NoSuchElementException as e:
         print(f"Error: Element not found - {e}")
 
     except Exception as e:
-        print(f"An unexpected error occurred while entering sign-up details: {e}")
+        print(f"An unexpected error occurred while entering login details: {e}")
 
-    # Wait for the sign-up process to complete
+    # Wait for the login process to complete
     time.sleep(2)
 
     # Optionally, you can print the current URL to verify navigation
@@ -53,7 +43,6 @@ try:
 
 except TimeoutException:
     print("Error: The page took too long to load.")
-
 except Exception as e:
     print(f"An unexpected error occurred: {e}")
 
