@@ -1,6 +1,6 @@
-from selenium import webdriver
-from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.webdriver.common.by import By
+from selenium import webdriver
 import time
 
 # Set up the web driver.
@@ -62,23 +62,23 @@ try:
     # Enter test sign-up details
     try:
         # Locate the username field and enter a username
-        username_field = driver.find_element(By.NAME, 'username')  # Adjust the selector as needed
+        username_field = driver.find_element(By.NAME, 'username')
         username_field.send_keys('testuser2')
 
         # Locate the email field and enter an email
-        email_field = driver.find_element(By.NAME, 'email')  # Adjust the selector as needed
+        email_field = driver.find_element(By.NAME, 'email')
         email_field.send_keys('testuser2@example.com')
 
         # Locate the password field and enter a password
-        password_field = driver.find_element(By.NAME, 'password')  # Adjust the selector as needed
+        password_field = driver.find_element(By.NAME, 'password')
         password_field.send_keys('securepasswOrd123!')
         
         # Locate the password confirmation field and enter a password
-        password_field = driver.find_element(By.NAME, 'confirm_password')  # Adjust the selector as needed
+        password_field = driver.find_element(By.NAME, 'confirm_password')
         password_field.send_keys('securepasswOrd123!')
 
         # Locate and click the sign-up button with the name "submit"
-        submit_button = driver.find_element(By.NAME, 'submit')  # Adjust the selector as needed
+        submit_button = driver.find_element(By.NAME, 'submit')
         submit_button.click()
 
         time.sleep(5) # Wait for user creation confirmation prompt.

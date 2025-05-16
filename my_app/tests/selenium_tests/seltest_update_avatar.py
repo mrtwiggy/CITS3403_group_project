@@ -1,6 +1,7 @@
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.common.by import By
 from selenium import webdriver
+import random
 import time
 
 # Set up the web driver (make sure the path to your driver is correct)
@@ -16,15 +17,15 @@ try:
     # Enter login details
     try:
         # Locate the email field and enter an email
-        email_field = driver.find_element(By.NAME, 'email') 
+        email_field = driver.find_element(By.NAME, 'email')  # Adjust the selector as needed
         email_field.send_keys('testuser@example.com')
 
         # Locate the password field and enter a password
-        password_field = driver.find_element(By.NAME, 'password')
+        password_field = driver.find_element(By.NAME, 'password')  # Adjust the selector as needed
         password_field.send_keys('securepasswOrd123!')
 
         # Locate and click the login button with the name "submit"
-        submit_button = driver.find_element(By.NAME, 'submit') 
+        submit_button = driver.find_element(By.NAME, 'submit')  # Adjust the selector as needed
         submit_button.click()
 
         print("Login details entered and submitted successfully.")
@@ -41,24 +42,29 @@ try:
     # After logging in.
 
     try:
-        explore_link = driver.find_element(By.LINK_TEXT, 'Explore') 
-        explore_link.click()
-
-        print("Went to explore page successfully.")
-
-        time.sleep(2) # Wait for explore page to load.
-
-        user_search_field = driver.find_element(By.ID, 'user-search') 
-        user_search_field.send_keys('testuser2')
-
-        time.sleep(5) # Delay to wait for search results to display.
-
-        friendship_button = driver.find_element(By.CLASS_NAME, 'friendship-btn')
-        friendship_button.click()
         
-        time.sleep(2) # Delay to process new friend.and
+        # Locate the button with the text "Change Avatar" and click it.
+        change_avatar_button = driver.find_element(By.XPATH, "//button[contains(text(), 'Change Avatar')]")
+        change_avatar_button.click()
 
-        print("Test passed! You now have requested to make a new friend! :)")
+        time.sleep(2) # Wait for avatar options to load.
+
+        # Locate the image with alt text "Avatar X" (random avatar!) and click it.
+        random_avatar = random.randint(1, 9)
+        print(f"Picked random avatar number: {random_avatar}! What do you think? A good choice?")
+        
+        avatar_image = driver.find_element(By.XPATH, f"//img[@alt='Avatar {random_avatar}']")
+        avatar_image.click()
+
+        time.sleep(2) # Delay for selection.
+
+        # Locate the button with the text "Save Changes" and click it.
+        save_changes_button = driver.find_element(By.XPATH, "//button[contains(text(), 'Save Changes')]")
+        save_changes_button.click()
+
+        time.sleep(5) # Delay to acknowledge the shock of your cool new outfit!
+
+        print("Test successful! You now have a cool new look!")
 
     except NoSuchElementException as e:
         print(f"Error: Element not found - {e}")
